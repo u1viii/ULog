@@ -1,0 +1,12 @@
+C:\Users\Ülvi\Desktop\ULog\ULog\obj\Debug\net8.0\ULog.csproj.AssemblyReference.cache
+C:\Users\Ülvi\Desktop\ULog\ULog\obj\Debug\net8.0\ULog.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Ülvi\Desktop\ULog\ULog\obj\Debug\net8.0\ULog.AssemblyInfoInputs.cache
+C:\Users\Ülvi\Desktop\ULog\ULog\obj\Debug\net8.0\ULog.AssemblyInfo.cs
+C:\Users\Ülvi\Desktop\ULog\ULog\obj\Debug\net8.0\ULog.csproj.CoreCompileInputs.cache
+C:\Users\Ülvi\Desktop\ULog\ULog\bin\Debug\net8.0\ULog.deps.json
+C:\Users\Ülvi\Desktop\ULog\ULog\bin\Debug\net8.0\ULog.dll
+C:\Users\Ülvi\Desktop\ULog\ULog\bin\Debug\net8.0\ULog.pdb
+C:\Users\Ülvi\Desktop\ULog\ULog\obj\Debug\net8.0\ULog.dll
+C:\Users\Ülvi\Desktop\ULog\ULog\obj\Debug\net8.0\refint\ULog.dll
+C:\Users\Ülvi\Desktop\ULog\ULog\obj\Debug\net8.0\ULog.pdb
+C:\Users\Ülvi\Desktop\ULog\ULog\obj\Debug\net8.0\ref\ULog.dll

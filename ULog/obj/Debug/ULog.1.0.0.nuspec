@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>ULog</id>
+    <version>1.0.0</version>
+    <authors>Abdullazada Ulvi</authors>
+    <description>Logger for MongoDb. In Test proccess</description>
+    <repository type="git" />
+    <dependencies>
+      <group targetFramework="net8.0">
+        <dependency id="Microsoft.AspNetCore.Mvc.Abstractions" version="2.2.0" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Mvc.Core" version="2.2.5" exclude="Build,Analyzers" />
+        <dependency id="MongoDB.Bson" version="2.25.0" exclude="Build,Analyzers" />
+        <dependency id="MongoDB.Driver" version="2.25.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\Users\Ülvi\Desktop\ULog\ULog\bin\Debug\net8.0\ULog.dll" target="lib\net8.0\ULog.dll" />
+  </files>
+</package>
