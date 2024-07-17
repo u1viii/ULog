@@ -14,6 +14,7 @@
 		<RepositoryUrl>https://github.com/u1viii/ULog</RepositoryUrl>
 		<PackageTags>Logger, Log, MongoDb log</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Version>1.1.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
