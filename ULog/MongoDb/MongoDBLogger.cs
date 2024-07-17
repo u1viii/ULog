@@ -10,47 +10,125 @@ public class MongoDBLogger : IULogger
 {
     readonly IMongoCollection<ULogEntry> _logCollection;
     readonly IMongoCollection<URequestEntry> _httpCollection;
-    readonly IBackgroundTaskQueue _bgService;
-    public MongoDBLogger(string connectionString, string databaseName, string collectionName, IBackgroundTaskQueue bgService)
+    readonly IBTQ _bgService;
+    readonly MongoClient _client;
+    readonly IMongoDatabase _database;
+    readonly IMongoDatabase _httpDatabase;
+    readonly string? _authorizeUser;
+    public MongoDBLogger(string connectionString, ULogOptions options, IBTQ bgService)
     {
-        var client = new MongoClient(connectionString);
-        var database = client.GetDatabase(databaseName);
-        _logCollection = database.GetCollection<ULogEntry>(collectionName);
-        _httpCollection = database.GetCollection<URequestEntry>(collectionName + "logs");
+        _client = new MongoClient(connectionString);
+        _database = _client.GetDatabase(options.ManualLogDbName);
+        _httpDatabase = _client.GetDatabase(options.HttpLogDbName);
+        _logCollection = _database.GetCollection<ULogEntry>(options.ManualCollectionName);
+        _httpCollection = _httpDatabase.GetCollection<URequestEntry>(options.HttpCollectionName);
         _bgService = bgService;
+        _authorizeUser = options.Authorize;
     }
+
+    public async Task<IEnumerable<string>> GetHttpCollectionsAsync()
+    {
+        var names = await (await _httpDatabase.ListCollectionNamesAsync()).ToListAsync();
+        return names;
+    }
+
+    public async Task<IEnumerable<UHttpLogEntry>> GetHttpLogAsync()
+    {
+        var names = await (await _httpDatabase.ListCollectionNamesAsync()).ToListAsync();
+        List<UHttpLogEntry> entries = new();
+        foreach (var name in names)
+        {
+            var collection = _httpDatabase.GetCollection<URequestEntry>(name);
+            var results = (await collection.Find(Builders<URequestEntry>.Filter.Empty).ToListAsync()).Select(x => new URequestEntryResult
+            {
+                Data = x.Data ?? new BsonDocument(),
+                DateTime = x.DateTime.ToString("HH:mm:ss"),
+                EndPoint = x.EndPoint,
+                Response = new UResponseEntryResult
+                {
+                    DateTime = x.Response.DateTime.Value.ToString("HH:mm:ss"),
+                    Message = x.Response.Message,
+                    SecondDiff = x.Response.SecondDiff,
+                    StatusCode = x.Response.StatusCode
+                },
+                User = x.User
+            });
+            entries.Add(new UHttpLogEntry
+            {
+                TableName = name,
+                Results = results
+            });
+        }
+        return entries;
+    }
+
+    public async Task<IEnumerable<URequestEntryResult>> GetHttpLogAsync(UHttpLogQuery query)
+    {
+        var names = await (await _httpDatabase.ListCollectionNamesAsync()).ToListAsync();
+        List<UHttpLogEntry> entries = new();
+        var table = _httpDatabase.GetCollection<URequestEntry>(query.Name);
+        if (table == null) throw new Exception();
+        var builder = Builders<URequestEntry>.Filter;
+        FilterDefinition<URequestEntry> filter = builder.Empty;
+        if (!string.IsNullOrWhiteSpace(query.Q))
+        {
+            var filters = new List<FilterDefinition<URequestEntry>>
+                {
+                    builder.Regex(entry => entry.User, new BsonRegularExpression(query.Q, "i")),
+                    builder.Regex(entry => entry.EndPoint, new BsonRegularExpression(query.Q, "i")),
+                    builder.Regex(entry => entry.Response, new BsonRegularExpression(query.Q, "i"))
+                };
+            filter = builder.Or(filters);
+        }
+        var result = (await table.Find(filter).ToListAsync()).Select(x => new URequestEntryResult
+        {
+            Data = x.Data ?? new BsonDocument(),
+            DateTime = x.DateTime.ToString("HH:mm:ss.fff"),
+            EndPoint = x.EndPoint,
+            Response = new UResponseEntryResult
+            {
+                DateTime = x.DateTime.ToString("HH:mm:ss.fff"),
+                Message = x.Response.Message,
+                SecondDiff = x.Response.SecondDiff,
+                StatusCode = x.Response.StatusCode
+            },
+            User = x.User
+        });
+        return result;
+    }
+
 
     public async Task<IEnumerable<ULogEntry>> GetLogAsync()
     {
         var group = new BsonDocument
-        {
-            { "$group", new BsonDocument
-                {
-                    { "_id", new BsonDocument
-                        {
-                            { "$dateToString", new BsonDocument
-                                {
-                                    { "format", "%Y-%m-%d" },
-                                    { "date", "$DateTime" }
+            {
+                { "$group", new BsonDocument
+                    {
+                        { "_id", new BsonDocument
+                            {
+                                { "$dateToString", new BsonDocument
+                                    {
+                                        { "format", "%Y-%m-%d" },
+                                        { "date", "$DateTime" }
+                                    }
                                 }
                             }
-                        }
-                    },
-                    { "count", new BsonDocument
-                        {
-                            { "$sum", 1 }
+                        },
+                        { "count", new BsonDocument
+                            {
+                                { "$sum", 1 }
+                            }
                         }
                     }
                 }
-            }
-        };
+            };
         var results = await _logCollection.Aggregate()
         .AppendStage<BsonDocument>(group)
         .ToListAsync();
         return await _logCollection.Find(Builders<ULogEntry>.Filter.Empty).ToListAsync();
     }
 
-    public async Task LogAsync(ULogLevel level, string message, string userName = null, ActionType actionType = ActionType.None, Dictionary<string, object>? additionalInfo = null)
+    public async Task LogAsync(ULogLevel level, string message, string? userName = null, ActionType actionType = ActionType.None, Dictionary<string, object>? additionalInfo = null)
     {
         BsonDocument document = new BsonDocument();
         document.AddRange(additionalInfo ?? new Dictionary<string, object>());
@@ -82,4 +160,6 @@ public class MongoDBLogger : IULogger
             await _httpCollection.UpdateOneAsync(filter, update);
         });
     }
+
+    public string AuthorizeUser() => _authorizeUser;
 }

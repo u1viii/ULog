@@ -2,52 +2,77 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
-using System.Security.Claims;
-using System.Text.Json;
 using ULog.Implements;
 using ULog.MongoDb.Entries;
+
 
 public class ULogAttribute : ActionFilterAttribute
 {
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         var _logger = context.HttpContext.RequestServices.GetRequiredService<IULogger>();
-        var actionArguments = context.ActionArguments;
-
         BsonDocument requestBody = new();
-        if (context.HttpContext.Request.Method == "POST")
+        context.HttpContext.Request.EnableBuffering();
+        using (var streamReader = new StreamReader(context.HttpContext.Request.Body, leaveOpen: true))
         {
-            context.HttpContext.Request.EnableBuffering();
-            using var streamReader = new StreamReader(context.HttpContext.Request.Body, leaveOpen: true);
-            requestBody = BsonDocument.Parse(JsonSerializer.Serialize(await streamReader.ReadToEndAsync()));
+            var bodyString = await streamReader.ReadToEndAsync();
+            if (!string.IsNullOrEmpty(bodyString))
+            {
+                try
+                {
+                    requestBody = BsonDocument.Parse(bodyString);
+                }
+                catch (Exception ex)
+                {
+                    requestBody.Add("Body", bodyString);
+                }
+            }
             context.HttpContext.Request.Body.Position = 0;
         }
-        else
-        {
-            var queryParams = context.HttpContext.Request.Query
-            .ToDictionary(q => q.Key, q => q.Value.ToString());
 
-            requestBody = BsonDocument.Parse(JsonSerializer.Serialize(queryParams));
+        var queryParams = context.HttpContext.Request.Query
+            .ToDictionary(q => q.Key, q => (object)q.Value.ToString());
+
+        foreach (var param in queryParams)
+        {
+            requestBody[param.Key] = BsonValue.Create(param.Value);
         }
+        var headers = context.HttpContext.Request.Headers
+            .ToDictionary(h => h.Key, h => (object)h.Value.ToString());
+        var controllerParams = context.ActionDescriptor.Parameters.Select(p => p.Name);
+        var headersBson = new BsonDocument();
+        foreach (var header in headers)
+        {
+            if (controllerParams.Contains(header.Key, System.StringComparer.OrdinalIgnoreCase))
+            {
+                headersBson[header.Key] = BsonValue.Create(header.Value);
+            }
+        }
+        if (headersBson.Any())
+        {
+            requestBody.Add("Headers", headersBson);
+        }
+
         var id = ObjectId.GenerateNewId();
         var requestTime = DateTime.Now;
+
         await _logger.LogRequestAsync(new URequestEntry
         {
             _id = id,
             Data = requestBody,
-            User = context.HttpContext.User?.FindFirst(ClaimTypes.Name)?.Value,
+            User = _logger.AuthorizeUser(),
             EndPoint = context.HttpContext.Request.Path,
             DateTime = requestTime,
         });
+
         var resultContext = await next();
 
         await _logger.LogResponseAsync(new UResponseEntry
         {
             StatusCode = context.HttpContext.Response.StatusCode,
             Message = resultContext.Exception == null ? "Action completed successfully" : $"Action failed with exception: {resultContext.Exception.Message}",
-            SecondDiff = DateTime.Now.Second - requestTime.Second,
+            SecondDiff = (DateTime.Now - requestTime).TotalSeconds,
             DateTime = DateTime.Now
         }, id);
-
     }
 }

@@ -3,6 +3,7 @@ C:\Users\Ülvi\Desktop\ULog\ULog\obj\Debug\net8.0\ULog.GeneratedMSBuildEditorCon
 C:\Users\Ülvi\Desktop\ULog\ULog\obj\Debug\net8.0\ULog.AssemblyInfoInputs.cache
 C:\Users\Ülvi\Desktop\ULog\ULog\obj\Debug\net8.0\ULog.AssemblyInfo.cs
 C:\Users\Ülvi\Desktop\ULog\ULog\obj\Debug\net8.0\ULog.csproj.CoreCompileInputs.cache
+C:\Users\Ülvi\Desktop\ULog\ULog\obj\Debug\net8.0\ULog.sourcelink.json
 C:\Users\Ülvi\Desktop\ULog\ULog\bin\Debug\net8.0\ULog.deps.json
 C:\Users\Ülvi\Desktop\ULog\ULog\bin\Debug\net8.0\ULog.dll
 C:\Users\Ülvi\Desktop\ULog\ULog\bin\Debug\net8.0\ULog.pdb

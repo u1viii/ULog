@@ -1,7 +1,7 @@
 ﻿namespace ULog.MongoDb.Entries;
-public class UResponseEntry
+public class UResponseEntryResult
 {
-    public DateTime? DateTime { get; set; }
+    public string? DateTime { get; set; }
     public double SecondDiff { get; set; }
     public string? Message { get; set; }
     public int StatusCode { get; set; }

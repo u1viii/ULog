@@ -1,75 +1,42 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using System.Security.Claims;
 using ULog.Implements;
 using ULog.MongoDb;
+using ULog.MongoDb.Entries;
 
 
 namespace ULog;
 
 public static class ServiceRegistration
 {
-    public static IServiceCollection AddULogger(this IServiceCollection services, string connectionString, string db, string table)
+    public static IServiceCollection AddULogger(this IServiceCollection services, string connectionString, ULogOptions? options = null, int queueCount = 2000)
     {
-        services.AddSingleton<IBackgroundTaskQueue>(_ =>
+        ULogOptions _options = options ?? new ULogOptions();
+        services.AddSingleton<IBTQ>(_ =>
         {
-            return new BackgroundTaskQueue(2000);
+            return new BTQ(queueCount);
         });
-        services.AddHostedService<QueuedHostedService>();
+        services.AddHostedService<QHS>();
         services.AddSingleton<IULogger>(provider =>
         {
-            var backgroundTaskQueue = provider.GetRequiredService<IBackgroundTaskQueue>();
-            return new MongoDBLogger(connectionString, db, table, backgroundTaskQueue);
+            if (_options.Authorize == null)
+            {
+                if (!services.Any(serviceDescriptor => serviceDescriptor.ServiceType == typeof(IHttpContextAccessor)))
+                {
+                    services.AddHttpContextAccessor();
+                }
+                var httpContextAccessor = provider.GetRequiredService<IHttpContextAccessor>();
+                _options.Authorize = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            }
+            var backgroundTaskQueue = provider.GetRequiredService<IBTQ>();
+            return new MongoDBLogger(connectionString, _options, backgroundTaskQueue);
         });
         return services;
-
-
     }
     public static IApplicationBuilder UseULoggerUI(this IApplicationBuilder app)
     {
-        app.Use(async (context, _next) =>
-        {
-            var logService = context.RequestServices.GetRequiredService<IULogger>();
-            if (context.Request.Path.StartsWithSegments("/ulog/index.html"))
-            {
-                var logs = await logService.GetLogAsync();
-
-                //var responseHtml = "<html><body><h1>Log Records</h1><ul>";
-                var responseHtml =
-                $@"<!DOCTYPE html>
-<html lang='en'>
-<head>
-    <meta charset='UTF-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <title>Document</title>
-    <link href='https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.min.css' rel='stylesheet' />
-</head>
-<body>
-    <div class='container pt-2'>
-        <div class='row'>
-            <div class='col-md-2'>
-    ";
-                foreach (var log in logs)
-                {
-                    responseHtml += $@"<div class='list-group list-group-light'>
- <a href='/ulog/index.html?{log.DateTime}' class='list-group-item list-group-item-action px-3 border-1 my-1 list-group-item-secondary' aria-current='true'>{log.DateTime}</a>
-    </div>";
-                }
-                responseHtml += $@"</div>
-        </div>
-    </div>
-    <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.2.0/mdb.umd.min.js'></script>
-</body>
-</html>";
-
-                await context.Response.WriteAsync(responseHtml);
-            }
-            else
-            {
-                await _next();
-                //await _next(context);
-            }
-        });
-        return app;
+        return app.UseMiddleware<ULogUIMiddleware>();
     }
 }

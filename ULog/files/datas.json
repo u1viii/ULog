@@ -1,0 +1,155 @@
+{
+    "attribute": [
+        {
+            "5 may 2024": [
+                {
+                    "_id": {
+                        "$oid": "6638b3e955254414a2bfdec2"
+                    },
+                    "Data": {
+                        "page": "1",
+                        "take": "25"
+                    },
+                    "User": "admin Shukurov",
+                    "EndPoint": "/api/Reports/ForClients",
+                    "Response": {
+                        "DateTime": {
+                            "$date": "2024-05-06T10:41:46.041Z"
+                        },
+                        "SecondDiff": 1,
+                        "Message": "Action completed successfully",
+                        "StatusCode": 200
+                    },
+                    "DateTime": {
+                        "$date": "2024-05-06T10:41:45.500Z"
+                    }
+                },
+                {
+                    "_id": {
+                        "$oid": "6638b3e955254414a2bfdec2"
+                    },
+                    "Data": {
+                        "page": "1",
+                        "take": "25"
+                    },
+                    "User": "admin Shukurov",
+                    "EndPoint": "/api/Reports/ForClients",
+                    "Response": {
+                        "DateTime": {
+                            "$date": "2024-05-06T10:41:46.041Z"
+                        },
+                        "SecondDiff": 1,
+                        "Message": "Action completed successfully",
+                        "StatusCode": 200
+                    },
+                    "DateTime": {
+                        "$date": "2024-05-06T10:41:45.500Z"
+                    }
+                },
+                {
+                    "_id": {
+                        "$oid": "6638b3ec55254414a2bfdec3"
+                    },
+                    "Data": {},
+                    "User": "admin Shukurov",
+                    "EndPoint": "/api/Reports/SalesForMonth",
+                    "Response": {
+                        "DateTime": {
+                            "$date": "2024-05-06T10:41:54.666Z"
+                        },
+                        "SecondDiff": 6,
+                        "Message": "Action completed successfully",
+                        "StatusCode": 200
+                    },
+                    "DateTime": {
+                        "$date": "2024-05-06T10:41:48.967Z"
+                    }
+                },
+                {
+                    "_id": {
+                        "$oid": "6638b3f655254414a2bfdec4"
+                    },
+                    "Data": {},
+                    "User": "admin Shukurov",
+                    "EndPoint": "/api/Reports/SalesForMonth",
+                    "Response": {
+                        "DateTime": {
+                            "$date": "2024-05-06T10:42:03.102Z"
+                        },
+                        "SecondDiff": -55,
+                        "Message": "Action completed successfully",
+                        "StatusCode": 200
+                    },
+                    "DateTime": {
+                        "$date": "2024-05-06T10:41:58.368Z"
+                    }
+                }
+            ]
+        },
+        {
+            "6 may 2024": [
+                {
+                    "_id": {
+                        "$oid": "6638b3e955254414a2bfdec2"
+                    },
+                    "Data": {
+                        "page": "1",
+                        "take": "25"
+                    },
+                    "User": "admin Shukurov",
+                    "EndPoint": "/api/Reports/ForClients",
+                    "Response": {
+                        "DateTime": {
+                            "$date": "2024-05-06T10:41:46.041Z"
+                        },
+                        "SecondDiff": 1,
+                        "Message": "Action completed successfully",
+                        "StatusCode": 200
+                    },
+                    "DateTime": {
+                        "$date": "2024-05-06T10:41:45.500Z"
+                    }
+                },
+                {
+                    "_id": {
+                        "$oid": "6638b3ec55254414a2bfdec3"
+                    },
+                    "Data": {},
+                    "User": "admin Shukurov",
+                    "EndPoint": "/api/Reports/SalesForMonth",
+                    "Response": {
+                        "DateTime": {
+                            "$date": "2024-05-06T10:41:54.666Z"
+                        },
+                        "SecondDiff": 6,
+                        "Message": "Action completed successfully",
+                        "StatusCode": 200
+                    },
+                    "DateTime": {
+                        "$date": "2024-05-06T10:41:48.967Z"
+                    }
+                },
+                {
+                    "_id": {
+                        "$oid": "6638b3f655254414a2bfdec4"
+                    },
+                    "Data": {},
+                    "User": "admin Shukurov",
+                    "EndPoint": "/api/Reports/SalesForMonth",
+                    "Response": {
+                        "DateTime": {
+                            "$date": "2024-05-06T10:42:03.102Z"
+                        },
+                        "SecondDiff": -55,
+                        "Message": "Action completed successfully",
+                        "StatusCode": 200
+                    },
+                    "DateTime": {
+                        "$date": "2024-05-06T10:41:58.368Z"
+                    }
+                }
+            ]
+        }
+    ],
+    "manual": []
+}
