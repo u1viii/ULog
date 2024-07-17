@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("Logger for MongoDb. In Test proccess")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.1.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.1.0+edc5956120ddac0a244a779a3ec64ffeef459141")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.1.0+05471aca788bfe1ac26c92ba6899b744e43c3cef")]
 [assembly: System.Reflection.AssemblyProductAttribute("ULog")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ULog")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.1.0.0")]

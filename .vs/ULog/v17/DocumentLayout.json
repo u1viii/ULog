@@ -22,7 +22,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 9,
+          "SelectedChildIndex": 8,
           "Children": [
             {
               "$type": "Bookmark",
@@ -58,6 +58,19 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ULog",
+              "DocumentMoniker": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\ULog.csproj",
+              "RelativeDocumentMoniker": "ULog\\ULog.csproj",
+              "ToolTip": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\ULog.csproj",
+              "RelativeToolTip": "ULog\\ULog.csproj",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAB4AAAANAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2024-07-17T13:54:19.47Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 1,
               "Title": "ULog",
               "DocumentMoniker": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\ULog.csproj",
@@ -65,20 +78,7 @@
               "ToolTip": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\ULog.csproj",
               "RelativeToolTip": "ULog\\ULog.csproj",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2024-07-17T12:51:00.138Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "ULog.csproj",
-              "DocumentMoniker": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\ULog.csproj",
-              "RelativeDocumentMoniker": "ULog\\ULog.csproj",
-              "ToolTip": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\ULog.csproj",
-              "RelativeToolTip": "ULog\\ULog.csproj",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAB0AAAAFAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2024-07-17T11:15:01.542Z",
+              "WhenOpened": "2024-07-17T13:36:29.948Z",
               "EditorCaption": ""
             },
             {
@@ -89,10 +89,9 @@
               "RelativeDocumentMoniker": "ULog\\ULogUIMiddleware.cs",
               "ToolTip": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\ULogUIMiddleware.cs",
               "RelativeToolTip": "ULog\\ULogUIMiddleware.cs",
-              "ViewState": "AQIAACIAAAAAAAAAAAAxwDQAAAAAAAAA",
+              "ViewState": "AQIAACMAAAAAAAAAAAAAwDQAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-07-17T10:20:04.116Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-07-17T10:20:04.116Z"
             }
           ]
         },
