@@ -28,7 +28,7 @@ public class ULogOptions
 
 The `queueCount` parameter determines how many logs are queued, with a default value of `2000`.
 
-It's recommended to specify the `Authorize` section yourself when integrating with IoT.
+It's recommended to specify the `Authorize` section yourself when add IoT.
 
 ## UI Usage
 
