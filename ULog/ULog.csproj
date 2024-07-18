@@ -14,8 +14,11 @@
 		<RepositoryUrl>https://github.com/u1viii/ULog</RepositoryUrl>
 		<PackageTags>Logger, Log, MongoDb log</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Version>1.1.0</Version>
+		<Version>1.1.0.2</Version>
 		<ApplicationIcon>icon.ico</ApplicationIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>icon.jpg</PackageIcon>
+		<Copyright>Abdullazada Ulvi</Copyright>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -35,5 +38,15 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <Content Include="icon.ico" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Include="..\icon.jpg">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	  <None Include="..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 </Project>
