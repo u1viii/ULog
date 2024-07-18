@@ -3,6 +3,18 @@
   "WorkspaceRootPath": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{D7B64622-B667-4C27-B1DA-571CBC7E9B60}|ULog\\ULog.csproj|c:\\users\\\u00FClvi\\desktop\\ulog\\readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{D7B64622-B667-4C27-B1DA-571CBC7E9B60}|ULog\\ULog.csproj|solutionrelative:readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D7B64622-B667-4C27-B1DA-571CBC7E9B60}|ULog\\ULog.csproj|c:\\users\\\u00FClvi\\desktop\\ulog\\ulog\\mongodb\\entries\\ulogoptions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D7B64622-B667-4C27-B1DA-571CBC7E9B60}|ULog\\ULog.csproj|solutionrelative:ulog\\mongodb\\entries\\ulogoptions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D7B64622-B667-4C27-B1DA-571CBC7E9B60}|ULog\\ULog.csproj|c:\\users\\\u00FClvi\\desktop\\ulog\\ulog\\serviceregistration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D7B64622-B667-4C27-B1DA-571CBC7E9B60}|ULog\\ULog.csproj|solutionrelative:ulog\\serviceregistration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{D7B64622-B667-4C27-B1DA-571CBC7E9B60}|ULog\\ULog.csproj|c:\\users\\\u00FClvi\\desktop\\ulog\\ulog\\ulog.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
       "RelativeMoniker": "D:0:0:{D7B64622-B667-4C27-B1DA-571CBC7E9B60}|ULog\\ULog.csproj|solutionrelative:ulog\\ulog.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
@@ -22,8 +34,34 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 8,
+          "SelectedChildIndex": 0,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "README.md",
+              "DocumentMoniker": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\README.md",
+              "RelativeDocumentMoniker": "README.md",
+              "ToolTip": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\README.md",
+              "RelativeToolTip": "README.md",
+              "ViewState": "AQIAABwAAAAAAAAAAAAQwDIAAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2024-07-18T12:16:24.959Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ULogOptions.cs",
+              "DocumentMoniker": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\MongoDb\\Entries\\ULogOptions.cs",
+              "RelativeDocumentMoniker": "ULog\\MongoDb\\Entries\\ULogOptions.cs",
+              "ToolTip": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\MongoDb\\Entries\\ULogOptions.cs",
+              "RelativeToolTip": "ULog\\MongoDb\\Entries\\ULogOptions.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAAEAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-18T12:16:02.008Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:135:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
@@ -58,20 +96,33 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "ULog",
+              "DocumentIndex": 2,
+              "Title": "ServiceRegistration.cs",
+              "DocumentMoniker": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\ServiceRegistration.cs",
+              "RelativeDocumentMoniker": "ULog\\ServiceRegistration.cs",
+              "ToolTip": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\ServiceRegistration.cs",
+              "RelativeToolTip": "ULog\\ServiceRegistration.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAB8AAABDAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-18T12:15:51.204Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "ULog.csproj",
               "DocumentMoniker": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\ULog.csproj",
               "RelativeDocumentMoniker": "ULog\\ULog.csproj",
               "ToolTip": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\ULog.csproj",
               "RelativeToolTip": "ULog\\ULog.csproj",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAB4AAAANAAAA",
+              "ViewState": "AQIAABIAAAAAAAAAAAAAACwAAAAhAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
               "WhenOpened": "2024-07-17T13:54:19.47Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "ULog",
               "DocumentMoniker": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\ULog.csproj",
               "RelativeDocumentMoniker": "ULog\\ULog.csproj",
@@ -83,15 +134,16 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "ULogUIMiddleware.cs",
               "DocumentMoniker": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\ULogUIMiddleware.cs",
               "RelativeDocumentMoniker": "ULog\\ULogUIMiddleware.cs",
               "ToolTip": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\ULogUIMiddleware.cs",
               "RelativeToolTip": "ULog\\ULogUIMiddleware.cs",
-              "ViewState": "AQIAACMAAAAAAAAAAAAAwDQAAAAAAAAA",
+              "ViewState": "AQIAADUAAAAAAAAAAAAgwJ0AAABPAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-07-17T10:20:04.116Z"
+              "WhenOpened": "2024-07-17T10:20:04.116Z",
+              "EditorCaption": ""
             }
           ]
         },

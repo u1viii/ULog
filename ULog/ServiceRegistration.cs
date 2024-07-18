@@ -28,7 +28,8 @@ public static class ServiceRegistration
                     services.AddHttpContextAccessor();
                 }
                 var httpContextAccessor = provider.GetRequiredService<IHttpContextAccessor>();
-                _options.Authorize = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var claimValues = httpContextAccessor.HttpContext.User.Claims.Where(c => _options.Claims.Contains(c.Type)).Select(x => x.Value.Trim());
+                _options.Authorize = string.Join(" ", claimValues);
             }
             var backgroundTaskQueue = provider.GetRequiredService<IBTQ>();
             return new MongoDBLogger(connectionString, _options, backgroundTaskQueue);

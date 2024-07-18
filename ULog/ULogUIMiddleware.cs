@@ -72,7 +72,6 @@ public class ULogUIMiddleware
                     }
                     else if (result == 1)
                     {
-                        // Burada ilgili kodlar çalıştırılabilir
                     }
                     else
                     {
@@ -156,7 +155,6 @@ public class ULogUIMiddleware
                 var htmlBuilder = new StringBuilder(new StreamReader(stream).ReadToEnd());
 
                 var jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(data);
-                //var jsonTable = table == null ? "[]" : Newtonsoft.Json.JsonConvert.SerializeObject(table);
                 var jsonTable = table == null ? "[]" : ((IEnumerable<URequestEntryResult>)table).ToJson();
 
 

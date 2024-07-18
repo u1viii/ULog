@@ -18,7 +18,7 @@ The `options` object is of type `ULogOptions` and takes the following default va
 ```csharp
 public class ULogOptions
 {
-    public string? Authorize { get; set; } = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    public string[] Claims { get; set; } = [ClaimTypes.Name];
     public string ManualLogDbName { get; set; } = "logs";
     public string HttpLogDbName { get; set; } = "httplogs";
     public string ManualCollectionName { get; set; } = DateTime.Now.Date.ToString("yyyy-MM-dd");
@@ -28,7 +28,7 @@ public class ULogOptions
 
 The `queueCount` parameter determines how many logs are queued, with a default value of `2000`.
 
-It's recommended to specify the `Authorize` section yourself when add IoT.
+It's recommended to specify the `Claims` section yourself when add IoT.
 
 ## UI Usage
 
@@ -49,7 +49,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddULogger("your-connection-string", new ULogOptions
 {
-    Authorize = "your-authorize-value",
+    Claims = "your-claims-for-user",
     ManualLogDbName = "your-logs-db",
     HttpLogDbName = "your-httplogs-db",
     ManualCollectionName = "your-manual-collection",
