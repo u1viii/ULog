@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using System.Security.Claims;
 using ULog.Implements;
 using ULog.MongoDb;
 using ULog.MongoDb.Entries;

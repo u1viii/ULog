@@ -6,5 +6,5 @@ public class ULogUIOptions
 {
     public string RoutePrefix { get; set; } = "ulog";
     public Func<Stream> IndexHtml { get; } = () => typeof(ULogUIOptions)?.GetTypeInfo()?.Assembly?
-        .GetManifestResourceStream("StudioLoggerLibrary.index.html");
+        .GetManifestResourceStream("ULog.index.html");
 }

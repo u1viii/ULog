@@ -7,19 +7,17 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using ULog.Implements;
 using ULog.MongoDb.Entries;
 
-
 namespace ULog;
 
 public class ULogUIMiddleware
 {
-    const string FileFolder = "StudioLoggerLibrary.files";
+    const string FileFolder = "ULog.files";
     readonly ULogOptions _logOptions;
     readonly ULogUIOptions _options;
     readonly StaticFileMiddleware _staticFileMiddleware;

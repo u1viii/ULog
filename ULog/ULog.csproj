@@ -14,8 +14,8 @@
 		<RepositoryUrl>https://github.com/u1viii/ULog</RepositoryUrl>
 		<PackageTags>Logger, Log, MongoDb log</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Version>1.1.0.3</Version>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Version>1.1.0.4</Version>
+		<PackageReadmeFile></PackageReadmeFile>
 		<PackageIcon>icon.jpg</PackageIcon>
 		<Copyright>Abdullazada Ulvi</Copyright>
 	</PropertyGroup>
@@ -34,11 +34,6 @@
 	<ItemGroup>
 		<EmbeddedResource Include="index.html" />
 		<EmbeddedResource Include="files/*" />
-	</ItemGroup>
-	<ItemGroup>
-	  <None Remove="files\main.js" />
-	  <None Remove="files\mdb.min.css" />
-	  <None Remove="files\style.css" />
 	</ItemGroup>
 	<ItemGroup>
 	  <None Include="..\icon.jpg">
