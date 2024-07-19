@@ -7,6 +7,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -19,15 +20,18 @@ namespace ULog;
 public class ULogUIMiddleware
 {
     const string FileFolder = "StudioLoggerLibrary.files";
+    readonly ULogOptions _logOptions;
     readonly ULogUIOptions _options;
     readonly StaticFileMiddleware _staticFileMiddleware;
     readonly IULogger _logger;
     public ULogUIMiddleware(RequestDelegate next,
             IHostingEnvironment hostingEnv,
             ILoggerFactory loggerFactory,
-            IULogger logger
+            IULogger logger,
+            ULogOptions logOptions
             )
     {
+        _logOptions = logOptions;
         _options = new ULogUIOptions();
         _logger = logger;
         _staticFileMiddleware = CreateStaticFileMiddleware(next, hostingEnv, loggerFactory, _options);
@@ -50,14 +54,23 @@ public class ULogUIMiddleware
     {
         var httpMethod = httpContext.Request.Method;
         var path = httpContext.Request.Path.Value;
-
+        if (httpContext.User != null)
+        {
+            var claimValues = httpContext.User.Claims
+                .Where(c => _logOptions.Claims.Contains(c.Type))
+                .Select(x => x.Value.Trim());
+            _logOptions.Authorize = string.Join(" ", claimValues);
+        }
+        else
+        {
+            _logOptions.Authorize = httpContext.Connection.RemoteIpAddress.ToString();
+        }
         if (httpMethod == "GET" && Regex.IsMatch(path, $"^/?{Regex.Escape(_options.RoutePrefix)}/?$", RegexOptions.IgnoreCase))
         {
             var indexUrl = httpContext.Request.GetEncodedUrl().TrimEnd('/') + "/index.html";
             RespondWithRedirect(httpContext.Response, indexUrl);
             return;
         }
-
         if (httpMethod == "GET" && Regex.IsMatch(path, $"^/{Regex.Escape(_options.RoutePrefix)}/?index.html$", RegexOptions.IgnoreCase))
         {
             var obj = httpContext.Request.Query;
@@ -72,6 +85,7 @@ public class ULogUIMiddleware
                     }
                     else if (result == 1)
                     {
+                        // Burada ilgili kodlar çalıştırılabilir
                     }
                     else
                     {
@@ -123,8 +137,13 @@ public class ULogUIMiddleware
                 {
                     qObj.Page = Convert.ToInt32(query.FirstOrDefault(x => x.Key == "page").Value);
                 }
-                var table = await _logger.GetHttpLogAsync(qObj);
-                await WriteHtml(response, json, table);
+                if (query.Any(x => x.Key == "take"))
+                {
+                    qObj.Take = Convert.ToInt32(query.FirstOrDefault(x => x.Key == "take").Value);
+                }
+                var result = await _logger.GetHttpLogAsync(qObj);
+
+                await WriteHtml(response, json, result.table, result.count);
             }
             else
             {
@@ -146,7 +165,7 @@ public class ULogUIMiddleware
             await WriteHtml(response, json);
         }
     }
-    private async Task WriteHtml(HttpResponse response, object data, object table = null)
+    private async Task WriteHtml(HttpResponse response, object data, object table = null, int count = 0)
     {
         if (!response.HasStarted)
         {
@@ -157,9 +176,9 @@ public class ULogUIMiddleware
                 var jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(data);
                 var jsonTable = table == null ? "[]" : ((IEnumerable<URequestEntryResult>)table).ToJson();
 
-
                 htmlBuilder.Replace("%(datas)", jsonData);
                 htmlBuilder.Replace("%(table)", jsonTable);
+                htmlBuilder.Replace("%(count)", count.ToString());
 
                 await response.WriteAsync(htmlBuilder.ToString(), Encoding.UTF8);
             }

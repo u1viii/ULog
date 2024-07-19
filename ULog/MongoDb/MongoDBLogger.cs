@@ -29,6 +29,7 @@ public class MongoDBLogger : IULogger
     public async Task<IEnumerable<string>> GetHttpCollectionsAsync()
     {
         var names = await (await _httpDatabase.ListCollectionNamesAsync()).ToListAsync();
+        names.Reverse();
         return names;
     }
 
@@ -62,7 +63,7 @@ public class MongoDBLogger : IULogger
         return entries;
     }
 
-    public async Task<IEnumerable<URequestEntryResult>> GetHttpLogAsync(UHttpLogQuery query)
+    public async Task<(IEnumerable<URequestEntryResult> table, int count)> GetHttpLogAsync(UHttpLogQuery query)
     {
         var names = await (await _httpDatabase.ListCollectionNamesAsync()).ToListAsync();
         List<UHttpLogEntry> entries = new();
@@ -80,7 +81,8 @@ public class MongoDBLogger : IULogger
                 };
             filter = builder.Or(filters);
         }
-        var result = (await table.Find(filter).ToListAsync()).Select(x => new URequestEntryResult
+        var a = await table.Find(filter).ToListAsync();
+        var result = (await table.Find(filter).Skip((query.Page - 1) * query.Take).Limit(query.Take).ToListAsync()).Select(x => new URequestEntryResult
         {
             Data = x.Data ?? new BsonDocument(),
             DateTime = x.DateTime.ToString("HH:mm:ss.fff"),
@@ -94,7 +96,8 @@ public class MongoDBLogger : IULogger
             },
             User = x.User
         });
-        return result;
+        (IEnumerable<URequestEntryResult>, int) tupleResult = (result, Convert.ToInt32(await table.Find(filter).CountAsync()));
+        return tupleResult;
     }
 
 

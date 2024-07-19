@@ -42,437 +42,495 @@ let btns = [];
 const takeOptions = [25, 50, 100];
 
 function createButtons(datas) {
-  let index = 0;
-  for (const d in datas) {
-    let btn = document.createElement("button");
-    btn.setAttribute("UIndex", index);
-    btn.classList.add("button");
-    btn.classList.add(index == 0 ? "button_main" : "button_second");
-    btn.innerText = d;
-    btn.innerHTML += index == 0 ? attributeSvg.trim() : manualSvg.trim();
-    area.appendChild(btn);
-    btns.push(btn);
-    index++;
-  }
+    let index = 0;
+    for (const d in datas) {
+        let btn = document.createElement("button");
+        btn.setAttribute("UIndex", index);
+        btn.classList.add("button");
+        btn.classList.add(index == 0 ? "button_main" : "button_second");
+        btn.innerText = d;
+        btn.innerHTML += index == 0 ? attributeSvg.trim() : manualSvg.trim();
+        area.appendChild(btn);
+        btns.push(btn);
+        index++;
+    }
 }
 function getDatas(datas) {
-  index = 0;
-  let MAIN = document.createElement("div");
-  MAIN.classList.add("main_container");
-  mainDiv.append(MAIN);
-  area.classList.add("sidebar", "cards");
-  tableArea.classList.add("main_card", "cards");
-  MAIN.append(area);
-  MAIN.append(tableArea);
-  let area2 = document.createElement("div");
-  createButtons(datas);
-  area2.classList.add("column");
-  area.append(area2);
-  btns.forEach(btn => {
-    btn.addEventListener("click", () => {
-      area2.innerHTML = "";
-      tableArea.innerHTML = "";
-      window.history.pushState({}, document.title, window.location.pathname);
-      let uindex = btn.getAttribute("UIndex");
-      setQueryparamsOnUrl("type", uindex);
-      window.location.reload();
+    index = 0;
+    let MAIN = document.createElement("div");
+    MAIN.classList.add("main_container");
+    mainDiv.append(MAIN);
+    area.classList.add("sidebar", "cards");
+    tableArea.classList.add("main_card", "cards");
+    MAIN.append(area);
+    MAIN.append(tableArea);
+    let area2 = document.createElement("div");
+    createButtons(datas);
+    area2.classList.add("column");
+    area.append(area2);
+    btns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            area2.innerHTML = "";
+            tableArea.innerHTML = "";
+            window.history.pushState({}, document.title, window.location.pathname);
+            let uindex = btn.getAttribute("UIndex");
+            setQueryparamsOnUrl("type", uindex);
+            window.location.reload();
+        });
     });
-  });
-  
-  const typeId = getQueryParamsUrl("type");
-  const tableName = getQueryParamsUrl("tableName")
 
-  if (parseInt(typeId) === 0) {
-    
-    generateSubButtons(datas, area2, typeId);
-    
-    tableName && generateTable(tableArea);
-  }
+    const typeId = getQueryParamsUrl("type");
+    const tableName = getQueryParamsUrl("tableName");
+
+    if (parseInt(typeId) === 0) {
+        generateSubButtons(datas, area2, typeId);
+
+        tableName && generateTable(tableArea);
+    }
 }
 
+function generateMenuForJsonData(jsonData, container) {
+    const jsonFullData = document.createElement("pre");
+    jsonFullData.classList.add("json-datas");
+    jsonFullData.innerText = JSON.stringify(jsonData, undefined, 4);
+
+    container.append(jsonFullData);
+    return jsonFullData;
+}
+
+// json data context menusu baglamaq ucun
+document.addEventListener("click", event => {
+    if (!event.target.closest(".json-data-container")) {
+        const expandedJsonElements = document.querySelectorAll(".json-datas");
+        expandedJsonElements.forEach(element => element.classList.remove("active"));
+    }
+});
 
 function generateSubButtons(datas, area2, id) {
-  
-  let list = document.createElement("ul");
-  list.classList.add("date_list");
-  
-  for (const data of Object.values(datas)[id]) {
-    let item = document.createElement("li");
-    item.classList.add("sub_button");
-    item.innerText = data;
-    item.setAttribute('data-tablename', data);
-    list.append(item);
-    item.addEventListener("click", () => {
-      setQueryparamsOnUrl("page", 1)
-      const encodedQuery = encodeURIComponent(item.innerText);
-      setQueryparamsOnUrl("tableName", encodedQuery);
-      location.reload();
-    });
-  }
-  area2.append(list);
+    let list = document.createElement("ul");
+    list.classList.add("date_list");
+    const sortedDates = sortDatesLatestFirst(Object.values(datas)[id])
+    sortedDates.forEach(data => {
+        let item = document.createElement("li");
+        item.classList.add("sub_button");
+        item.innerText = data;
+        item.setAttribute("data-tablename", data);
+        list.append(item);
+        item.addEventListener("click", () => {
+            setQueryparamsOnUrl("page", 1);
+            const encodedQuery = encodeURIComponent(item.innerText);
+            setQueryparamsOnUrl("tableName", encodedQuery);
+            location.reload();
+        });
+
+    })
+    for (const data of Object.values(datas)[id]) {
+    }
+    area2.append(list);
+}
+
+function sortDatesLatestFirst(dateArray) {
+    const dateObjects = dateArray;
+    return dateObjects.sort();
 }
 
 function generateTable(tableArea) {
+    const tableBtns = document.querySelectorAll("ul.date_list .sub_button");
+    const decodedQueryTablename = decodeURIComponent(
+        getQueryParamsUrl("tableName")
+    );
 
-  const tableBtns = document.querySelectorAll('ul.date_list .sub_button');
-  const decodedQueryTablename = decodeURIComponent(getQueryParamsUrl("tableName"));
+    tableBtns.forEach(element => {
+        const btnAttrName = element.getAttribute("data-tablename");
 
-  tableBtns.forEach(element => {
-    const btnAttrName = element.getAttribute('data-tablename');
+        if (decodedQueryTablename.toLowerCase() == btnAttrName) {
+            element.classList.add("active");
+        }
+    });
 
-    if (decodedQueryTablename.toLowerCase() == btnAttrName) {
-      element.classList.add("active");
+    tableArea.innerHTML = "";
+
+    let filterContainer = document.createElement("div");
+    let paginationContainer = document.createElement("div");
+    filterContainer.classList.add("take_select_container");
+
+    var takeSelect = takeSelector();
+    var searchInput = searchDatas();
+    const currentPage = getQueryParamsUrl('page') || 1;
+    const currentTake = getQueryParamsUrl('take') || 25;
+
+    const totalPage = Math.floor(totalCount / parseInt(currentTake));
+    const pageCount = totalPage > 0 ? totalPage : 1;
+    if (currentPage > pageCount) {
+        setQueryparamsOnUrl('page', 1);
+        window.location.reload()
     }
-  });
+    var pagination = paginationDatas(currentPage, pageCount);
+
+    filterContainer.append(takeSelect);
+    filterContainer.append(searchInput);
+    paginationContainer.append(pagination);
 
 
-  tableArea.innerHTML = "";
-
-  let filterContainer = document.createElement("div");
-  let paginationContainer = document.createElement("div");
-  filterContainer.classList.add("take_select_container");
-
-  var takeSelect = takeSelector();
-  var searchInput = searchDatas();
-  let currentPage = 1;
-  let pageCount = 12;
-
-  var pagination = paginationDatas(currentPage, pageCount);
-
-  filterContainer.append(takeSelect);
-  filterContainer.append(searchInput);
-  paginationContainer.append(pagination);
-  let skip = 0,
-    take = 10;
-
-  var newTable = populateTable(table);
-  tableArea.append(filterContainer);
-  tableArea.append(newTable);
-  tableArea.append(paginationContainer);
+    var newTable = populateTable(table);
+    tableArea.append(filterContainer);
+    tableArea.append(newTable);
+    tableArea.append(paginationContainer);
 }
 function takeSelector() {
-  let select = document.createElement("select");
-  select.classList.add("take_select");
+    let select = document.createElement("select");
+    select.classList.add("take_select");
 
-  takeOptions.forEach(opt => {
-    let option = document.createElement("option");
-    option.value = opt;
-    option.innerText = opt;
-    if (opt === takeOptions[0]) {
-      select.value= opt
+    takeOptions.forEach(opt => {
+        let option = document.createElement("option");
+        option.value = opt;
+        option.innerText = opt;
+        if (opt === takeOptions[0]) {
+            select.value = opt;
+        }
+        select.append(option);
+    });
+
+    let takeOnUrl = getQueryParamsUrl("take");
+    !takeOnUrl && setQueryparamsOnUrl("take", "25");
+    if (takeOptions.some(op => parseInt(takeOnUrl) === op)) {
+        select.value = takeOnUrl;
     }
-    select.append(option);
-  });
 
+    select.addEventListener("change", e => {
+        setQueryparamsOnUrl("take", e.target.value);
+        window.location.reload();
+    });
 
-
-
-  let takeOnUrl = getQueryParamsUrl("take");
-  !takeOnUrl && setQueryparamsOnUrl("take", "25")
-  if (takeOptions.some(op => parseInt(takeOnUrl) === op)) {
-    select.value = takeOnUrl;
-  }
-
-  select.addEventListener("change", e => {
-    setQueryparamsOnUrl("take", e.target.value);
-    window.location.reload();
-  });
-
-  return select;
+    return select;
 }
 function searchDatas() {
-  let inputValue = "";
-  const searchForm = document.createElement("form");
-  const searchInput = document.createElement("input");
-  const searchLabel = document.createElement("label");
-  const searchBtn = document.createElement("button");
-  const inputMarker = "search";
+    let inputValue = "";
+    const searchForm = document.createElement("form");
+    const searchInput = document.createElement("input");
+    const searchLabel = document.createElement("label");
+    const searchBtn = document.createElement("button");
+    const inputMarker = "search";
 
-  searchForm.classList.add("search_container");
-  searchInput.classList.add("search_input");
-  searchLabel.classList.add("search_icon_label");
-  searchBtn.classList.add("search_btn");
+    searchForm.classList.add("search_container");
+    searchInput.classList.add("search_input");
+    searchLabel.classList.add("search_icon_label");
+    searchBtn.classList.add("search_btn");
 
-  searchBtn.innerHTML += searchSvg.trim();
+    searchBtn.innerHTML += searchSvg.trim();
 
-  searchInput.type = "search";
-  searchInput.placeholder = "Axtar...";
-  searchInput.id = inputMarker;
-  searchLabel.htmlFor = inputMarker;
-  searchBtn.type = "submit";
+    searchInput.type = "search";
+    searchInput.placeholder = "Axtar...";
+    searchInput.id = inputMarker;
+    searchLabel.htmlFor = inputMarker;
+    searchBtn.type = "submit";
 
-  searchLabel.append(searchBtn);
-  searchForm.append(searchInput);
-  searchForm.append(searchLabel);
+    searchLabel.append(searchBtn);
+    searchForm.append(searchInput);
+    searchForm.append(searchLabel);
 
-  const searchOnUrl = getQueryParamsUrl("search");
-  console.log(searchOnUrl);
-  if (searchOnUrl) {
-    searchInput.value = searchOnUrl;
-    inputValue = searchOnUrl;
-  }
-
-  searchInput.addEventListener("input", e => {
-    inputValue = e.target.value;
-    if (e.target.value === "") {
-      setQueryparamsOnUrl("search", "");
+    const searchOnUrl = getQueryParamsUrl("search");
+    if (searchOnUrl) {
+        searchInput.value = searchOnUrl;
+        inputValue = searchOnUrl;
     }
-  });
 
+    searchInput.addEventListener("input", e => {
+        inputValue = e.target.value;
+        if (e.target.value === "") {
+            setQueryparamsOnUrl("search", "");
+        }
+    });
 
-  
-  searchInput.addEventListener("keypress", e => {
-    if (e.key === "Enter") {
-      e.preventDefault();
+    searchInput.addEventListener("keypress", e => {
+        if (e.key === "Enter") {
+            e.preventDefault();
 
-      if (inputValue === "" || inputValue.trim() === "") {
-        searchInput.placeholder = "Nəsə daxil edin";
-      } else {
-        if(searchOnUrl === inputValue) return;
+            if (inputValue === "" || inputValue.trim() === "") {
+                searchInput.placeholder = "Nəsə daxil edin";
+            } else {
+                if (searchOnUrl === inputValue) return;
 
-        setQueryparamsOnUrl("search", inputValue);
-        window.location.reload();
-      }
-    }
-  });
+                setQueryparamsOnUrl("search", inputValue);
+                window.location.reload();
+            }
+        }
+    });
 
-  searchForm.addEventListener("submit", e => {
-    e.preventDefault();
-    e.stopPropagation();
+    searchForm.addEventListener("submit", e => {
+        e.preventDefault();
+        e.stopPropagation();
 
-    if (inputValue.trim() === "") {
-      searchInput.placeholder = "Nəsə daxil edin";
-    } else {
-      setQueryparamsOnUrl("search", inputValue);
-      window.location.reload();
-    }
-  });
+        if (inputValue.trim() === "") {
+            searchInput.placeholder = "Nəsə daxil edin";
+        } else {
+            setQueryparamsOnUrl("search", inputValue);
+            window.location.reload();
+        }
+    });
 
-  return searchForm;
+    return searchForm;
 }
 function getQueryParamsUrl(queryParam) {
-  let url = new URL(window.location.href);
-  return url.searchParams.get(queryParam);
+    let url = new URL(window.location.href);
+    return url.searchParams.get(queryParam);
 }
 
 function setQueryparamsOnUrl(queryParam, value) {
-  let url = new URL(window.location.href);
+    let url = new URL(window.location.href);
 
-  url.searchParams.set(queryParam, value);
+    url.searchParams.set(queryParam, value);
 
-  window.history.pushState({}, "", url);
+    window.history.pushState({}, "", url);
 }
 function paginationDatas(currentPage, pageCount) {
-  const showedPages = 5;
-  const paginationWrapper = document.createElement("div");
-  const pagination = document.createElement("div");
-  const paginationCeils = document.createElement("ul");
-  const prev = document.createElement("li");
-  const next = document.createElement("li");
+    const showedPages = 5;
+    const paginationWrapper = document.createElement("div");
+    const pagination = document.createElement("div");
+    const paginationCeils = document.createElement("ul");
+    const prev = document.createElement("li");
+    const next = document.createElement("li");
 
-  paginationWrapper.classList.add("pagination_wrapper");
-  pagination.classList.add("pagination");
-  paginationCeils.classList.add("pagination_ceils");
+    paginationWrapper.classList.add("pagination_wrapper");
+    pagination.classList.add("pagination");
+    paginationCeils.classList.add("pagination_ceils");
 
-  prev.classList.add("pagination_prev");
-  next.classList.add("pagination_next");
-  prev.innerHTML = arrowLeft.trim();
-  next.innerHTML = arrowRight.trim();
+    prev.classList.add("pagination_prev");
+    next.classList.add("pagination_next");
+    prev.innerHTML = arrowLeft.trim();
+    next.innerHTML = arrowRight.trim();
 
-  const setPageOnQuery = currentPage => {
-    setQueryparamsOnUrl("page", currentPage);
-  };
-
-  prev.addEventListener("click", () => {
-    if (currentPage > 1) {
-      currentPage--;
-      setPageOnQuery(currentPage);
-      renderPagination();
-      window.location.reload(); // Add reload here
-    }
-  });
-
-  next.addEventListener("click", () => {
-    if (currentPage < pageCount) {
-      currentPage++;
-      setPageOnQuery(currentPage);
-      renderPagination();
-      window.location.reload(); // Add reload here
-    }
-  });
-
-  pagination.append(prev);
-  pagination.append(next);
-
-  function renderPagination() {
-    pagination.innerHTML = "";
-    paginationCeils.innerHTML = "";
-    pagination.append(prev);
-
-    // Get the current page from the URL query parameter
-    const currenPageOnQuery = parseInt(getQueryParamsUrl("page")) || 1;
-    currentPage = currenPageOnQuery;
-
-    const createPageItem = pageNum => {
-      const paginationCeil = document.createElement("li");
-      paginationCeil.classList.add("pagination_ceil");
-
-      if (pageNum === currentPage) {
-        paginationCeil.classList.add("active");
-      }
-
-      paginationCeil.innerText = pageNum;
-      paginationCeil.addEventListener("click", () => {
-        currentPage = pageNum;
-
-        if (currenPageOnQuery !== currentPage) {
-          setPageOnQuery(currentPage);
-        }
-        window.location.reload(); // Ensure page reloads
-      });
-      paginationCeils.append(paginationCeil);
+    const setPageOnQuery = currentPage => {
+        setQueryparamsOnUrl("page", currentPage);
     };
 
-    let startPage, endPage;
-    if (pageCount <= showedPages) {
-      startPage = 1;
-      endPage = pageCount;
-    } else {
-      const maxPagesBeforeCurrentPage = Math.floor(showedPages / 2);
-      const maxPagesAfterCurrentPage = Math.ceil(showedPages / 2) - 1;
-      if (currentPage <= maxPagesBeforeCurrentPage) {
-        startPage = 1;
-        endPage = showedPages;
-      } else if (currentPage + maxPagesAfterCurrentPage >= pageCount) {
-        startPage = pageCount - showedPages + 1;
-        endPage = pageCount;
-      } else {
-        startPage = currentPage - maxPagesBeforeCurrentPage;
-        endPage = currentPage + maxPagesAfterCurrentPage;
-      }
-    }
+    prev.addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            setPageOnQuery(currentPage);
+            renderPagination();
+            window.location.reload();
+        }
+    });
 
-    if (startPage > 1) {
-      createPageItem(1);
-      if (startPage > 2) {
-        const ellipsis = document.createElement("li");
-        ellipsis.classList.add("pagination_ceil");
-        ellipsis.innerText = "...";
-        paginationCeils.append(ellipsis);
-      }
-    }
+    next.addEventListener("click", () => {
+        if (currentPage < pageCount) {
+            currentPage++;
+            setPageOnQuery(currentPage);
+            renderPagination();
+            window.location.reload();
+        }
+    });
 
-    for (let i = startPage; i <= endPage; i++) {
-      createPageItem(i);
-    }
-
-    if (endPage < pageCount) {
-      if (endPage < pageCount - 1) {
-        const ellipsis = document.createElement("li");
-        ellipsis.classList.add("pagination_ceil");
-        ellipsis.innerText = "...";
-        paginationCeils.append(ellipsis);
-      }
-      createPageItem(pageCount);
-    }
-
-    pagination.append(paginationCeils);
+    pagination.append(prev);
     pagination.append(next);
-  }
 
-  renderPagination();
-  paginationWrapper.append(pagination);
-  return paginationWrapper;
+    function renderPagination() {
+        pagination.innerHTML = "";
+        paginationCeils.innerHTML = "";
+        pagination.append(prev);
+
+
+        const currenPageOnQuery = parseInt(getQueryParamsUrl("page")) || 1;
+        currentPage = currenPageOnQuery;
+
+        const createPageItem = pageNum => {
+            const paginationCeil = document.createElement("li");
+            paginationCeil.classList.add("pagination_ceil");
+
+            if (pageNum === currentPage) {
+                paginationCeil.classList.add("active");
+            }
+
+            paginationCeil.innerText = pageNum;
+            paginationCeil.addEventListener("click", () => {
+                currentPage = pageNum;
+
+                if (currenPageOnQuery !== currentPage) {
+                    setPageOnQuery(currentPage);
+                    window.location.reload();
+                }
+            });
+            paginationCeils.append(paginationCeil);
+        };
+
+        let startPage, endPage;
+        if (pageCount <= showedPages) {
+            startPage = 1;
+            endPage = pageCount;
+        } else {
+            const maxPagesBeforeCurrentPage = Math.floor(showedPages / 2);
+            const maxPagesAfterCurrentPage = Math.ceil(showedPages / 2) - 1;
+            if (currentPage <= maxPagesBeforeCurrentPage) {
+                startPage = 1;
+                endPage = showedPages;
+            } else if (currentPage + maxPagesAfterCurrentPage >= pageCount) {
+                startPage = pageCount - showedPages + 1;
+                endPage = pageCount;
+            } else {
+                startPage = currentPage - maxPagesBeforeCurrentPage;
+                endPage = currentPage + maxPagesAfterCurrentPage;
+            }
+        }
+
+        if (startPage > 1) {
+            createPageItem(1);
+            if (startPage > 2) {
+                const ellipsis = document.createElement("li");
+                ellipsis.classList.add("pagination_ceil");
+                ellipsis.innerText = "...";
+                paginationCeils.append(ellipsis);
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            createPageItem(i);
+        }
+
+        if (endPage < pageCount) {
+            if (endPage < pageCount - 1) {
+                const ellipsis = document.createElement("li");
+                ellipsis.classList.add("pagination_ceil");
+                ellipsis.innerText = "...";
+                paginationCeils.append(ellipsis);
+            }
+            createPageItem(pageCount);
+        }
+
+        pagination.append(paginationCeils);
+        pagination.append(next);
+    }
+
+    renderPagination();
+    paginationWrapper.append(pagination);
+    return paginationWrapper;
 }
 
-
-
 function populateTable(data) {
-  const taleContainer = document.createElement("div");
-  taleContainer.classList.add("table_container");
-  const table = document.createElement("table");
-  table.classList.add("table");
-  table.id = "newTable";
+    const taleContainer = document.createElement("div");
+    taleContainer.classList.add("table_container");
+    const table = document.createElement("table");
+    table.classList.add("table");
+    table.id = "newTable";
 
-  const headers = [
-    "№",
-    "Data",
-    "User",
-    "EndPoint",
-    "RequestTime",
-    "StatusCode",
-    "Message",
-    "ResponseTime",
-    "SecondDiff",
-  ];
-  const headerRow = document.createElement("tr");
-  const tHead = document.createElement("thead");
-  tHead.appendChild(headerRow);
-  headers.forEach(header => {
-    const th = document.createElement("th");
-    th.innerText = header;
-    headerRow.appendChild(th);
-  });
-  table.appendChild(tHead);
-  const tBody = document.createElement("tbody");
-  table.appendChild(tBody);
-  data.forEach((item, index) => {
-    const row = document.createElement("tr");
+    const headers = [
+        "№",
+        "Data",
+        "User",
+        "EndPoint",
+        "RequestTime",
+        "StatusCode",
+        "Message",
+        "ResponseTime",
+        "SecondDiff",
+    ];
+    const headerRow = document.createElement("tr");
+    const tHead = document.createElement("thead");
+    tHead.appendChild(headerRow);
+    headers.forEach(header => {
+        const th = document.createElement("th");
+        th.innerText = header;
+        headerRow.appendChild(th);
+    });
+    table.appendChild(tHead);
+    const tBody = document.createElement("tbody");
+    table.appendChild(tBody);
+    data.forEach((item, index) => {
+        const row = document.createElement("tr");
 
-    // Sıra numarası
-    const noCell = document.createElement("td");
-    noCell.innerText = index + 1;
-    row.appendChild(noCell);
+        // Sıra numarası
+        const noCell = document.createElement("td");
+        noCell.innerText = index + 1;
+        row.appendChild(noCell);
 
-    // Data
-    const dataCell = document.createElement("td");
-    dataCell.innerText = JSON.stringify(item.Data);
-    row.appendChild(dataCell);
+        // Data
+        const dataCell = document.createElement("td");
 
-    // User
-    const userCell = document.createElement("td");
-    userCell.innerText = item.User;
-    row.appendChild(userCell);
+        const jsonDat = JSON.stringify(item.Data, null, "\t");
+        const jsonData = Object.keys(item.Data);
+        if (jsonData.length > 2) {
+            const dataCont = document.createElement("div");
+            const dataText = document.createElement("p");
 
-    // EndPoint
-    const endPointCell = document.createElement("td");
-    endPointCell.innerText = item.EndPoint;
-    row.appendChild(endPointCell);
+            dataCont.classList.add("json-data-container");
+            dataCont.classList.add("context-menu");
+            dataText.innerText += "{";
+            for (let i = 0; i < 2; i++) {
+                dataText.innerText +=
+                    '"' + jsonData[i] + '": "' + item.Data[jsonData[i]] + '"';
+            }
+            dataText.innerText += " ...}";
+            dataText.innerHTML += arrowDown.trim()
+            dataCont.append(dataText);
+            dataCell.append(dataCont);
+            const jsonDataContext = document.createElement("div");
+            const jsonFullData = document.createElement("pre");
 
-    // RequestTime
-    const requestTimeCell = document.createElement("td");
-    requestTimeCell.innerText = item.DateTime;
+            jsonDataContext.classList.add("json-datas");
 
-    row.appendChild(requestTimeCell);
-    if (item.Response != null) {
-      // StatusCode
-      const statusCodeCell = document.createElement("td");
-      statusCodeCell.innerText = item.Response.StatusCode;
-      row.appendChild(statusCodeCell);
+            jsonFullData.innerText = JSON.stringify(item.Data, undefined, 4);
 
-      // Message
-      const messageCell = document.createElement("td");
-      messageCell.innerText = item.Response.Message;
-      row.appendChild(messageCell);
+            jsonDataContext.append(jsonFullData)
+            dataCont.append(jsonDataContext);
 
-      // ResponseTime
-      const responseTimeCell = document.createElement("td");
-      responseTimeCell.innerText = item.Response.DateTime;
-      row.appendChild(responseTimeCell);
+            dataText.addEventListener("click", () => {
+                const expandedJsonElements = document.querySelectorAll(".json-datas");
+                expandedJsonElements.forEach(element =>
+                    element.classList.remove("active")
+                );
 
-      // SecondDiff
-      const secondDiffCell = document.createElement("td");
-      secondDiffCell.innerText = item.Response.SecondDiff;
-      row.appendChild(secondDiffCell);
-    } else {
-      for (let index = 0; index < 4; index++) {
-        row.appendChild(document.createElement("td"));
-      }
-    }
+                jsonDataContext.classList.add("active");
+            });
+            // dataCell.innerText = JSON.stringify(item.Data, null, "\t");
+        } else {
+            dataCell.innerText = JSON.stringify(item.Data);
+        }
+        row.appendChild(dataCell);
 
-    tBody.appendChild(row);
-  });
-  taleContainer.append(table);
-  return taleContainer;
+        // User
+        const userCell = document.createElement("td");
+        userCell.innerText = item.User;
+        row.appendChild(userCell);
+
+        // EndPoint
+        const endPointCell = document.createElement("td");
+        endPointCell.innerText = item.EndPoint;
+        row.appendChild(endPointCell);
+
+        // RequestTime
+        const requestTimeCell = document.createElement("td");
+        requestTimeCell.innerText = item.DateTime;
+
+        row.appendChild(requestTimeCell);
+        if (item.Response != null) {
+            // StatusCode
+            const statusCodeCell = document.createElement("td");
+            statusCodeCell.innerText = item.Response.StatusCode;
+            row.appendChild(statusCodeCell);
+
+            // Message
+            const messageCell = document.createElement("td");
+            messageCell.innerText = item.Response.Message;
+            row.appendChild(messageCell);
+
+            // ResponseTime
+            const responseTimeCell = document.createElement("td");
+            responseTimeCell.innerText = item.Response.DateTime;
+            row.appendChild(responseTimeCell);
+
+            // SecondDiff
+            const secondDiffCell = document.createElement("td");
+            secondDiffCell.innerText = item.Response.SecondDiff;
+            row.appendChild(secondDiffCell);
+        } else {
+            for (let index = 0; index < 4; index++) {
+                row.appendChild(document.createElement("td"));
+            }
+        }
+
+        tBody.appendChild(row);
+    });
+    taleContainer.append(table);
+    return taleContainer;
 }
 getDatas(datas);

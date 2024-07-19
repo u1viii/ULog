@@ -155,7 +155,11 @@ body {
 	overflow: scroll;
 }
 .table tbody td {
-	padding: 24px 12px;
+	padding: 18px 12px;
+}
+.table tbody td p {
+	margin: 0;
+	cursor: pointer;
 }
 .table th, .table td {
     padding: 12px;
@@ -181,6 +185,7 @@ thead {
 	width: 100px;
 	top: 0;
 	border-radius: var(--radius-xl);
+	z-index: 50;
 }
 .table thead th {
 	background-color: transparent;
@@ -265,7 +270,7 @@ thead {
     gap: 10px;
 }
 .pagination_ceils {
-	width: 400px;
+	/* width: 400px; */
 	padding: 0;
     margin: 0;
     display: flex;
@@ -293,4 +298,50 @@ thead {
 	background: var(--primary-gradient);
 	color: var(--white);
 	box-shadow: var(--box-shadow-gradient);
+}
+
+.json-data-container {
+	position: relative;
+}
+.json-data-container p {
+	padding: 5px;
+	border-radius: 10px;
+	transition: 0.4s ease;
+}
+.json-data-container p:hover {
+	background: var(--thead-gradient);
+}
+.json-datas {
+	position: absolute;
+	top: 0px;
+	left: 0;
+	min-width: 205px;
+	z-index: 5;
+	border-radius: 6px;
+	background: var(--thead-gradient);
+	max-height: 0;
+	overflow-y: scroll;
+	text-align: justify;
+	transition: max-height 0.2s ease-out;
+}
+
+.json-datas.active {
+	max-height: 200px;
+}
+.json-datas pre {
+	padding: 12px;
+}
+.json-datas:-webkit-scrollbar-track {
+	border-radius: 7px;
+	background-color: transparent;
+}
+
+.json-datas::-webkit-scrollbar {
+	width: 4px;
+	background-color: transparent;
+}
+
+.json-datas::-webkit-scrollbar-thumb {
+	border-radius: 4px;
+	background-color: rgb(228, 228, 228);
 }

@@ -8,7 +8,7 @@ public interface IULogger
 {
     string AuthorizeUser();
     Task<IEnumerable<ULogEntry>> GetLogAsync();
-    Task<IEnumerable<URequestEntryResult>> GetHttpLogAsync(UHttpLogQuery query);
+    Task<(IEnumerable<URequestEntryResult> table, int count)> GetHttpLogAsync(UHttpLogQuery query);
     Task<IEnumerable<string>> GetHttpCollectionsAsync();
     Task LogAsync(ULogLevel level, string message, string? userName = null, ActionType actionType = ActionType.None, Dictionary<string, object>? additionalInfo = null);
     Task LogRequestAsync(URequestEntry data);

@@ -36,11 +36,12 @@
 		<EmbeddedResource Include="files/*" />
 	</ItemGroup>
 	<ItemGroup>
+	  <None Remove="files\main.js" />
+	  <None Remove="files\mdb.min.css" />
+	  <None Remove="files\style.css" />
+	</ItemGroup>
+	<ItemGroup>
 	  <None Include="..\icon.jpg">
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	  </None>
-	  <None Include="..\README.md">
 	    <Pack>True</Pack>
 	    <PackagePath>\</PackagePath>
 	  </None>

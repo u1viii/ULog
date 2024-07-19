@@ -30,6 +30,14 @@ The `queueCount` parameter determines how many logs are queued, with a default v
 
 It's recommended to specify the `Claims` section yourself when add IoT.
 
+For Http logging you should add :
+
+```csharp
+[ULog]
+```
+
+attribute above action or controller. 
+
 ## UI Usage
 
 To use the ULog UI, add the following line to your setup:
