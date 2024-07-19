@@ -14,7 +14,6 @@ public class MongoDBLogger : IULogger
     readonly MongoClient _client;
     readonly IMongoDatabase _database;
     readonly IMongoDatabase _httpDatabase;
-    readonly string? _authorizeUser;
     public MongoDBLogger(string connectionString, ULogOptions options, IBTQ bgService)
     {
         _client = new MongoClient(connectionString);
@@ -23,7 +22,6 @@ public class MongoDBLogger : IULogger
         _logCollection = _database.GetCollection<ULogEntry>(options.ManualCollectionName);
         _httpCollection = _httpDatabase.GetCollection<URequestEntry>(options.HttpCollectionName);
         _bgService = bgService;
-        _authorizeUser = options.Authorize;
     }
 
     public async Task<IEnumerable<string>> GetHttpCollectionsAsync()
@@ -163,6 +161,4 @@ public class MongoDBLogger : IULogger
             await _httpCollection.UpdateOneAsync(filter, update);
         });
     }
-
-    public string AuthorizeUser() => _authorizeUser;
 }

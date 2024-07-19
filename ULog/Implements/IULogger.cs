@@ -6,7 +6,6 @@ namespace ULog.Implements;
 
 public interface IULogger
 {
-    string AuthorizeUser();
     Task<IEnumerable<ULogEntry>> GetLogAsync();
     Task<(IEnumerable<URequestEntryResult> table, int count)> GetHttpLogAsync(UHttpLogQuery query);
     Task<IEnumerable<string>> GetHttpCollectionsAsync();

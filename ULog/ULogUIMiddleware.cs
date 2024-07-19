@@ -52,17 +52,7 @@ public class ULogUIMiddleware
     {
         var httpMethod = httpContext.Request.Method;
         var path = httpContext.Request.Path.Value;
-        if (httpContext.User != null)
-        {
-            var claimValues = httpContext.User.Claims
-                .Where(c => _logOptions.Claims.Contains(c.Type))
-                .Select(x => x.Value.Trim());
-            _logOptions.Authorize = string.Join(" ", claimValues);
-        }
-        else
-        {
-            _logOptions.Authorize = httpContext.Connection.RemoteIpAddress.ToString();
-        }
+        
         if (httpMethod == "GET" && Regex.IsMatch(path, $"^/?{Regex.Escape(_options.RoutePrefix)}/?$", RegexOptions.IgnoreCase))
         {
             var indexUrl = httpContext.Request.GetEncodedUrl().TrimEnd('/') + "/index.html";
@@ -83,7 +73,6 @@ public class ULogUIMiddleware
                     }
                     else if (result == 1)
                     {
-                        // Burada ilgili kodlar çalıştırılabilir
                     }
                     else
                     {
@@ -127,9 +116,9 @@ public class ULogUIMiddleware
             if (query.Any(x => x.Key == "tableName"))
             {
                 qObj.Name = query.FirstOrDefault(x => x.Key == "tableName").Value;
-                if (query.Any(x => x.Key == "q"))
+                if (query.Any(x => x.Key == "search"))
                 {
-                    qObj.Q = query.FirstOrDefault(x => x.Key == "q").Value;
+                    qObj.Q = query.FirstOrDefault(x => x.Key == "search").Value;
                 }
                 if (query.Any(x => x.Key == "page"))
                 {

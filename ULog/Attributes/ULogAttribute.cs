@@ -11,6 +11,19 @@ public class ULogAttribute : ActionFilterAttribute
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         var _logger = context.HttpContext.RequestServices.GetRequiredService<IULogger>();
+        var _loggerOptions = context.HttpContext.RequestServices.GetRequiredService<ULogOptions>();
+        
+        var claimValues = context.HttpContext.User.Claims
+            .Where(c => _loggerOptions.Claims.Contains(c.Type))
+            .Select(x => x.Value.Trim());
+        if (claimValues.Any())
+        {
+            _loggerOptions.Authorize = string.Join(" ", claimValues);
+        }
+        else
+        {
+            _loggerOptions.Authorize = context.HttpContext.Connection.RemoteIpAddress.ToString();
+        }
         BsonDocument requestBody = new();
         context.HttpContext.Request.EnableBuffering();
         using (var streamReader = new StreamReader(context.HttpContext.Request.Body, leaveOpen: true))
@@ -60,7 +73,7 @@ public class ULogAttribute : ActionFilterAttribute
         {
             _id = id,
             Data = requestBody,
-            User = _logger.AuthorizeUser(),
+            User = _loggerOptions.Authorize,
             EndPoint = context.HttpContext.Request.Path,
             DateTime = requestTime,
         });
