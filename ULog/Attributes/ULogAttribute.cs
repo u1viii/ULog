@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
+using ULog.Attributes;
 using ULog.Implements;
 using ULog.MongoDb.Entries;
 
@@ -10,6 +11,14 @@ public class ULogAttribute : ActionFilterAttribute
 {
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
+        var hasDisableULogAttribute = context.ActionDescriptor.EndpointMetadata
+            .Any(em => em is DisableULogAttribute);
+
+        if (hasDisableULogAttribute)
+        {
+            await next();
+            return;
+        }
         var _logger = context.HttpContext.RequestServices.GetRequiredService<IULogger>();
         var _loggerOptions = context.HttpContext.RequestServices.GetRequiredService<ULogOptions>();
         

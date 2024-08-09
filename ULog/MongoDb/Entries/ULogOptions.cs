@@ -10,4 +10,5 @@ public class ULogOptions
     public string HttpLogDbName { get; set; } = "httplogs";
     public string ManualCollectionName { get; set; } = DateTime.Now.Date.ToString("yyyy-MM-dd");
     public string HttpCollectionName { get; set; } = DateTime.Now.Date.ToString("yyyy-MM-dd");
+    internal bool UseCookies { get; set; } = false;
 }

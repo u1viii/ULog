@@ -22,17 +22,19 @@ public class ULogUIMiddleware
     readonly ULogUIOptions _options;
     readonly StaticFileMiddleware _staticFileMiddleware;
     readonly IULogger _logger;
+    readonly UConfiguration _configuration;
     public ULogUIMiddleware(RequestDelegate next,
             IHostingEnvironment hostingEnv,
             ILoggerFactory loggerFactory,
             IULogger logger,
-            ULogOptions logOptions
-            )
+            ULogOptions logOptions,
+            UConfiguration configuration)
     {
         _logOptions = logOptions;
         _options = new ULogUIOptions();
         _logger = logger;
         _staticFileMiddleware = CreateStaticFileMiddleware(next, hostingEnv, loggerFactory, _options);
+        _configuration = configuration;
     }
     private StaticFileMiddleware CreateStaticFileMiddleware(
             RequestDelegate next,
@@ -106,6 +108,14 @@ public class ULogUIMiddleware
         {
             response.StatusCode = 200;
             response.ContentType = "text/html;charset=utf-8";
+            if (_configuration.UseCookies)
+            {
+                var cookie = response.HttpContext.Request.Cookies;
+                if (!cookie.Any(x => x.Key == "token") || cookie["token"] != _configuration.Keyword)
+                {
+                    await WriteHtml(response, "Token qeyd olunmayıb");
+                }
+            }
             var json = new
             {
                 attribute = await _logger.GetHttpCollectionsAsync(),

@@ -38,6 +38,13 @@ For Http logging you should add :
 
 attribute above action or controller. 
 
+If you dont want to log any action you should add:
+
+```csharp
+[DisableULog]
+```
+attribute above action.
+
 ## UI Usage
 
 To use the ULog UI, add the following line to your setup:

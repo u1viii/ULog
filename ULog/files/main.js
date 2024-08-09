@@ -55,6 +55,97 @@ function createButtons(datas) {
         index++;
     }
 }
+
+
+function createTokenForm() {
+    let form = document.createElement("form");
+    let inputContainer = document.createElement("div");
+    let tokenLabel = document.createElement("label");
+    let tokenInput = document.createElement("input");
+    let submitBtn = document.createElement("button");
+
+    form.classList.add("token_form");
+    inputContainer.classList.add('tokenFormInput_container');
+    submitBtn.classList.add('token_form_btn');
+
+    tokenLabel.textContent = "Token";
+    tokenLabel.setAttribute("for", "token");
+
+    tokenInput.setAttribute("type", "text");
+    tokenInput.setAttribute("placeholder", "token daxil edin...");
+    tokenInput.setAttribute("name", "token");
+    tokenInput.setAttribute("id", "token");
+    tokenInput.setAttribute("autocomplete", "off");
+    tokenInput.setAttribute("required", true);
+
+    submitBtn.textContent = "Login ol";
+    submitBtn.type = "submit";
+
+    function handleSubmit(event) {
+        event.preventDefault();
+        const tokenValue = tokenInput.value;
+        if (tokenValue.trim() === "") return;
+
+        setCookie("token", tokenValue.trim());
+        location.reload();
+    }
+
+    form.addEventListener("submit", handleSubmit);
+
+    tokenInput.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            handleSubmit(event);
+        }
+    });
+
+    form.appendChild(tokenLabel);
+    inputContainer.appendChild(tokenInput);
+    inputContainer.appendChild(submitBtn);
+    form.appendChild(inputContainer);
+
+    return form;
+}
+
+
+function createModal(content) {
+    let modal = document.createElement("div");
+    let modalContainer = document.createElement("div");
+
+    modal.classList.add("modal_custom");
+    modalContainer.classList.add("modal_container");
+
+    modalContainer.appendChild(content);
+    modal.appendChild(modalContainer);
+
+    document.body.appendChild(modal);
+    mainDiv.classList.add("main_open_modal")
+    return modal;
+}
+
+function getCookie(name){
+    const cDecoded = decodeURIComponent(document.cookie);
+    
+    const cArray = cDecoded.split("; ");
+    let result = null;
+    
+    cArray.forEach(element => {
+        if(element.indexOf(name) == 0){
+            result = element.substring(name.length + 1)
+        }
+    })
+
+    return result;
+}
+
+function setCookie(name, value){
+    document.cookie = `${decodeURIComponent(name)}=${decodeURIComponent(value)};`
+}
+
+function deleteCookie(name){
+    document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
+
 function getDatas(datas) {
     index = 0;
     let MAIN = document.createElement("div");
@@ -65,7 +156,23 @@ function getDatas(datas) {
     MAIN.append(area);
     MAIN.append(tableArea);
     let area2 = document.createElement("div");
+    //if auth token not correct
+    if (typeof datas === 'string' || !datas) {
+        deleteCookie("token", null);
+        const tokenForm = createTokenForm();
+        createModal(tokenForm);
+        return;
+    }
+
     createButtons(datas);
+    const typeId = getQueryParamsUrl("type");
+    const tableName = getQueryParamsUrl("tableName");
+
+    if (parseInt(typeId) === 0 || parseInt(typeId) === 1) {
+        const sortedDates = sortDatesLatestFirst(Object.values(datas)[typeId])
+        var searchTables= searchTableNames(sortedDates)
+        area.append(searchTables)
+    }
     area2.classList.add("column");
     area.append(area2);
     btns.forEach(btn => {
@@ -79,11 +186,9 @@ function getDatas(datas) {
         });
     });
 
-    const typeId = getQueryParamsUrl("type");
-    const tableName = getQueryParamsUrl("tableName");
-
     if (parseInt(typeId) === 0) {
-        generateSubButtons(datas, area2, typeId);
+        const sortedDates = sortDatesLatestFirst(Object.values(datas)[typeId])
+        generateSubButtons(sortedDates, area2);
 
         tableName && generateTable(tableArea);
     }
@@ -106,11 +211,10 @@ document.addEventListener("click", event => {
     }
 });
 
-function generateSubButtons(datas, area2, id) {
+function generateSubButtons(datas, area2) {
     let list = document.createElement("ul");
     list.classList.add("date_list");
-    const sortedDates = sortDatesLatestFirst(Object.values(datas)[id])
-    sortedDates.forEach(data => {
+    datas.forEach(data => {
         let item = document.createElement("li");
         item.classList.add("sub_button");
         item.innerText = data;
@@ -124,8 +228,6 @@ function generateSubButtons(datas, area2, id) {
         });
 
     })
-    for (const data of Object.values(datas)[id]) {
-    }
     area2.append(list);
 }
 
@@ -159,7 +261,7 @@ function generateTable(tableArea) {
     const currentPage = getQueryParamsUrl('page') || 1;
     const currentTake = getQueryParamsUrl('take') || 25;
 
-    const totalPage = Math.floor(totalCount / parseInt(currentTake));
+    const totalPage = Math.ceil(totalCount / parseInt(currentTake));
     const pageCount = totalPage > 0 ? totalPage : 1;
     if (currentPage > pageCount) {
         setQueryparamsOnUrl('page', 1);
@@ -177,6 +279,7 @@ function generateTable(tableArea) {
     tableArea.append(newTable);
     tableArea.append(paginationContainer);
 }
+
 function takeSelector() {
     let select = document.createElement("select");
     select.classList.add("take_select");
@@ -204,6 +307,7 @@ function takeSelector() {
 
     return select;
 }
+
 function searchDatas() {
     let inputValue = "";
     const searchForm = document.createElement("form");
@@ -246,9 +350,7 @@ function searchDatas() {
         if (e.key === "Enter") {
             e.preventDefault();
 
-            if (inputValue === "" || inputValue.trim() === "") {
-                searchInput.placeholder = "Nəsə daxil edin";
-            } else {
+            if (!(inputValue === "" || inputValue.trim() === "")) {
                 if (searchOnUrl === inputValue) return;
 
                 setQueryparamsOnUrl("search", inputValue);
@@ -261,16 +363,75 @@ function searchDatas() {
         e.preventDefault();
         e.stopPropagation();
 
-        if (inputValue.trim() === "") {
-            searchInput.placeholder = "Nəsə daxil edin";
-        } else {
+        if (!(inputValue.trim() === "")) {
             setQueryparamsOnUrl("search", inputValue);
             window.location.reload();
-        }
+        } 
     });
 
     return searchForm;
 }
+function searchTableNames(tableButtonDates) {
+    const searchForm = document.createElement("form");
+    const searchInput = document.createElement("input");
+    const searchLabel = document.createElement("label");
+    const searchBtn = document.createElement("button");
+    const inputMarker = "tableSearch";
+
+    searchForm.classList.add("search_container", "search_table");
+    searchInput.classList.add("search_input");
+    searchLabel.classList.add("search_icon_label");
+    searchBtn.classList.add("search_btn");
+
+    searchBtn.innerHTML = searchSvg.trim();
+
+    searchInput.type = "search";
+    searchInput.placeholder = "Axtar...";
+    searchInput.id = inputMarker;
+    searchLabel.htmlFor = inputMarker;
+    searchBtn.type = "submit";
+
+    searchLabel.append(searchBtn);
+    searchForm.append(searchInput);
+    searchForm.append(searchLabel);
+    
+    function tableFilter(input) {
+        const btnsContainer = document.querySelector('.sidebar .column');
+    
+        if (!btnsContainer) return;
+    
+
+        btnsContainer.innerHTML = '';
+    
+
+        const inputLower = input.toLowerCase();
+        let filteredDates = []
+        console.log(input === '' || input.trim() === '');
+        if (input === '' || input.trim() === '') {
+            filteredDates = tableButtonDates;
+        } else {
+            filteredDates = tableButtonDates.filter(date => date.includes(inputLower));
+        }
+        generateSubButtons(filteredDates, btnsContainer);
+    }
+    
+    searchInput.addEventListener("input", e => {
+        const inputValue = e.target.value;
+        tableFilter(inputValue);
+    });
+
+    searchForm.addEventListener("submit", e => {
+        e.preventDefault();
+        const inputValue = searchInput.value.trim();
+
+        if (!(inputValue === "")) {
+            tableFilter(inputValue);
+        } 
+    });
+
+    return searchForm;
+}
+
 function getQueryParamsUrl(queryParam) {
     let url = new URL(window.location.href);
     return url.searchParams.get(queryParam);
@@ -359,7 +520,7 @@ function paginationDatas(currentPage, pageCount) {
             startPage = 1;
             endPage = pageCount;
         } else {
-            const maxPagesBeforeCurrentPage = Math.floor(showedPages / 2);
+            const maxPagesBeforeCurrentPage = Math.ceil(showedPages / 2);
             const maxPagesAfterCurrentPage = Math.ceil(showedPages / 2) - 1;
             if (currentPage <= maxPagesBeforeCurrentPage) {
                 startPage = 1;
@@ -533,4 +694,6 @@ function populateTable(data) {
     taleContainer.append(table);
     return taleContainer;
 }
+
+
 getDatas(datas);
