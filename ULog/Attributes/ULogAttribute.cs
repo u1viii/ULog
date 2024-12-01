@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
+using System.Text.Json;
 using ULog.Attributes;
 using ULog.Implements;
 using ULog.MongoDb.Entries;
@@ -34,23 +35,32 @@ public class ULogAttribute : ActionFilterAttribute
             _loggerOptions.Authorize = context.HttpContext.Connection.RemoteIpAddress.ToString();
         }
         BsonDocument requestBody = new();
+
         context.HttpContext.Request.EnableBuffering();
+
         using (var streamReader = new StreamReader(context.HttpContext.Request.Body, leaveOpen: true))
         {
-            var bodyString = await streamReader.ReadToEndAsync();
+            streamReader.BaseStream.Seek(0, SeekOrigin.Begin); // Ensure you're at the start of the stream
+            var bodyString = await streamReader.ReadToEndAsync(); // Read the body as a string
+
             if (!string.IsNullOrEmpty(bodyString))
             {
                 try
                 {
-                    requestBody = BsonDocument.Parse(bodyString);
+                    var jsonDocument = JsonDocument.Parse(bodyString); // Use JsonDocument to parse JSON
+                    requestBody = BsonDocument.Parse(jsonDocument.RootElement.ToString()); // Convert to BsonDocument if needed
                 }
                 catch (Exception ex)
                 {
+                    // Handle error and preserve the raw body string if JSON parsing fails
                     requestBody.Add("Body", bodyString);
                 }
             }
-            context.HttpContext.Request.Body.Position = 0;
+
+            // Reset the stream position for further use
+            streamReader.BaseStream.Seek(0, SeekOrigin.Begin);
         }
+
 
         var queryParams = context.HttpContext.Request.Query
             .ToDictionary(q => q.Key, q => (object)q.Value.ToString());

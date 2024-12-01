@@ -10,5 +10,6 @@ public class URequestEntry
     public string? User { get; set; }
     public string? EndPoint { get; set; }
     public UResponseEntry? Response { get; set; } = null;
-    public DateTime DateTime { get; set; } = DateTime.UtcNow;
+    [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
+    public DateTime DateTime { get; set; } = DateTime.Now;
 }
