@@ -85,6 +85,7 @@ public class MongoDBLogger : IULogger
             Data = x.Data ?? new BsonDocument(),
             DateTime = x.DateTime.ToString("HH:mm:ss.fff"),
             EndPoint = x.EndPoint,
+            Method = x.Method,
             Response = new UResponseEntryResult
             {
                 DateTime = x.DateTime.ToString("HH:mm:ss.fff"),

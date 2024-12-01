@@ -9,6 +9,7 @@ public class URequestEntry
     public BsonDocument? Data { get; set; }
     public string? User { get; set; }
     public string? EndPoint { get; set; }
+    public string Method { get; set; } = null!;
     public UResponseEntry? Response { get; set; } = null;
     [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
     public DateTime DateTime { get; set; } = DateTime.Now;

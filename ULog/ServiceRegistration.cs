@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using ULog.Implements;
+using ULog.Middlewares;
 using ULog.MongoDb;
 using ULog.MongoDb.Entries;
 
@@ -29,13 +30,30 @@ public static class ServiceRegistration
         return services;
     }
 
+    public static IApplicationBuilder UseULog(this IApplicationBuilder app)
+    {
+        return app.UseMiddleware<HttpLoggingMiddleware>();
+    }
+
+    public static IApplicationBuilder UseULoggerUI(this IApplicationBuilder app)
+    {
+        return app.UseMiddleware<ULogUIMiddleware>();
+    }
     public static IApplicationBuilder UseULoggerUI(this IApplicationBuilder app, UConfiguration? configuration = null)
     {
         var config = app.ApplicationServices.GetRequiredService<UConfiguration>();
         if (configuration is not null)
         {
-            config.UseCookies = configuration.UseCookies;
             config.Keyword = configuration.Keyword;
+        }
+        return app.UseMiddleware<ULogUIMiddleware>();
+    }
+    public static IApplicationBuilder UseULoggerUI(this IApplicationBuilder app, string? password = null)
+    {
+        var config = app.ApplicationServices.GetRequiredService<UConfiguration>();
+        if (password is not null)
+        {
+            config.Keyword = password;
         }
         return app.UseMiddleware<ULogUIMiddleware>();
     }

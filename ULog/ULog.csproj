@@ -6,13 +6,13 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Authors>Abdullazada Ulvi</Authors>
-		<Company>NaNTech</Company>
+		<Company></Company>
 		<Product>ULog</Product>
 		<Description>Logger for MongoDb. In Test proccess</Description>
-		<PackageId>NaNTech.MongoDB.ULog</PackageId>
+		<PackageId>ULog.MongoDB</PackageId>
 		<Title>ULog</Title>
 		<RepositoryUrl>https://github.com/u1viii/ULog</RepositoryUrl>
-		<PackageTags>Logger, Log, MongoDb log</PackageTags>
+		<PackageTags>Logger, Log, MongoDb log, ULog, MongoDB</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<Version>1.1.2</Version>
 		<PackageReadmeFile>README.md</PackageReadmeFile>

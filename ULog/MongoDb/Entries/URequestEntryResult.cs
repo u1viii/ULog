@@ -7,6 +7,7 @@ public class URequestEntryResult
     public BsonDocument? Data { get; set; }
     public string? User { get; set; }
     public string? EndPoint { get; set; }
+    public string Method { get; set; }
     public UResponseEntryResult? Response { get; set; } = null;
     public string? DateTime { get; set; }
 }

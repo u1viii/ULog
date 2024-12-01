@@ -20,55 +20,83 @@ public class ULogAttribute : ActionFilterAttribute
             await next();
             return;
         }
-        var _logger = context.HttpContext.RequestServices.GetRequiredService<IULogger>();
-        var _loggerOptions = context.HttpContext.RequestServices.GetRequiredService<ULogOptions>();
-        
-        var claimValues = context.HttpContext.User.Claims
-            .Where(c => _loggerOptions.Claims.Contains(c.Type))
+
+        var httpContext = context.HttpContext;
+        var _logger = httpContext.RequestServices.GetRequiredService<IULogger>();
+        var _loggerOptions = httpContext.RequestServices.GetRequiredService<ULogOptions>();
+        //Coming from middleware
+        var requestBody = httpContext.Items["RequestBody"] as URequestBody;
+
+        //Who sent request
+        _loggerOptions.Authorize = GetAuthorize(httpContext, _loggerOptions.Claims);
+
+        BsonDocument request = new();
+
+        //Query params
+        foreach (var param in GetQueryParams(httpContext))
+        {
+            request[param.Key] = BsonValue.Create(param.Value);
+        }
+
+        //Header params
+        var headersBson = GetHeaders(context);
+
+        if (headersBson.Any())
+        {
+            request.Add("Headers", headersBson);
+        }
+
+        //Body params
+        if (request is not null && !string.IsNullOrEmpty(requestBody!.Body))
+        {
+            request.Add("Body", BsonDocument.Parse(requestBody.Body));
+        }
+
+        //Start logging
+        var id = ObjectId.GenerateNewId();
+        var requestTime = DateTime.Now;
+
+        await _logger.LogRequestAsync(new URequestEntry
+        {
+            _id = id,
+            Data = request,
+            User = _loggerOptions.Authorize,
+            EndPoint = context.HttpContext.Request.Path,
+            Method = requestBody?.Method ?? "",
+            DateTime = requestTime
+        });
+
+        var resultContext = await next();
+
+        await _logger.LogResponseAsync(new UResponseEntry
+        {
+            StatusCode = context.HttpContext.Response.StatusCode,
+            Message = resultContext.Exception == null ? "Working!" : $"Error: {resultContext.Exception.Source}",
+            SecondDiff = (DateTime.Now - requestTime).TotalSeconds,
+            DateTime = DateTime.Now
+        }, id);
+    }
+    string GetAuthorize(HttpContext context, string[] claims)
+    {
+        var claimValues = context.User.Claims
+            .Where(c => claims.Contains(c.Type))
             .Select(x => x.Value.Trim());
         if (claimValues.Any())
         {
-            _loggerOptions.Authorize = string.Join(" ", claimValues);
+            return string.Join(" ", claimValues);
         }
         else
         {
-            _loggerOptions.Authorize = context.HttpContext.Connection.RemoteIpAddress.ToString();
+            return GetIpAddress(context.Request);
         }
-        BsonDocument requestBody = new();
-
-        context.HttpContext.Request.EnableBuffering();
-
-        using (var streamReader = new StreamReader(context.HttpContext.Request.Body, leaveOpen: true))
-        {
-            streamReader.BaseStream.Seek(0, SeekOrigin.Begin); // Ensure you're at the start of the stream
-            var bodyString = await streamReader.ReadToEndAsync(); // Read the body as a string
-
-            if (!string.IsNullOrEmpty(bodyString))
-            {
-                try
-                {
-                    var jsonDocument = JsonDocument.Parse(bodyString); // Use JsonDocument to parse JSON
-                    requestBody = BsonDocument.Parse(jsonDocument.RootElement.ToString()); // Convert to BsonDocument if needed
-                }
-                catch (Exception ex)
-                {
-                    // Handle error and preserve the raw body string if JSON parsing fails
-                    requestBody.Add("Body", bodyString);
-                }
-            }
-
-            // Reset the stream position for further use
-            streamReader.BaseStream.Seek(0, SeekOrigin.Begin);
-        }
-
-
-        var queryParams = context.HttpContext.Request.Query
+    }
+    Dictionary<string, object> GetQueryParams(HttpContext context)
+    {
+        return context.Request.Query
             .ToDictionary(q => q.Key, q => (object)q.Value.ToString());
-
-        foreach (var param in queryParams)
-        {
-            requestBody[param.Key] = BsonValue.Create(param.Value);
-        }
+    }
+    BsonDocument GetHeaders(ActionExecutingContext context)
+    {
         var headers = context.HttpContext.Request.Headers
             .ToDictionary(h => h.Key, h => (object)h.Value.ToString());
         var controllerParams = context.ActionDescriptor.Parameters.Select(p => p.Name);
@@ -80,31 +108,32 @@ public class ULogAttribute : ActionFilterAttribute
                 headersBson[header.Key] = BsonValue.Create(header.Value);
             }
         }
-        if (headersBson.Any())
+        return headersBson;
+    }
+    string GetIpAddress(HttpRequest request)
+    {
+        var ipAddress = request?.Headers?["X-Real-IP"].ToString();
+
+        if (!string.IsNullOrEmpty(ipAddress))
+            return ipAddress;
+
+        ipAddress = request?.Headers?["X-Forwarded-For"].ToString();
+
+        if (!string.IsNullOrEmpty(ipAddress))
         {
-            requestBody.Add("Headers", headersBson);
+            var parts = ipAddress.Split(',');
+
+            if (parts.Count() > 0)
+            {
+                ipAddress = parts[0];
+            }
+            return ipAddress;
         }
 
-        var id = ObjectId.GenerateNewId();
-        var requestTime = DateTime.Now;
-
-        await _logger.LogRequestAsync(new URequestEntry
-        {
-            _id = id,
-            Data = requestBody,
-            User = _loggerOptions.Authorize,
-            EndPoint = context.HttpContext.Request.Path,
-            DateTime = requestTime,
-        });
-
-        var resultContext = await next();
-
-        await _logger.LogResponseAsync(new UResponseEntry
-        {
-            StatusCode = context.HttpContext.Response.StatusCode,
-            Message = resultContext.Exception == null ? "Action completed successfully" : $"Action failed with exception: {resultContext.Exception.Message}",
-            SecondDiff = (DateTime.Now - requestTime).TotalSeconds,
-            DateTime = DateTime.Now
-        }, id);
+        ipAddress = request?.HttpContext?.Connection?.RemoteIpAddress?.ToString();
+        if (!string.IsNullOrEmpty(ipAddress))
+            return ipAddress;
+        return string.Empty;
     }
+
 }

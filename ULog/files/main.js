@@ -71,7 +71,7 @@ function createTokenForm() {
     tokenLabel.textContent = "Token";
     tokenLabel.setAttribute("for", "token");
 
-    tokenInput.setAttribute("type", "text");
+    tokenInput.setAttribute("type", "password");
     tokenInput.setAttribute("placeholder", "token daxil edin...");
     tokenInput.setAttribute("name", "token");
     tokenInput.setAttribute("id", "token");
@@ -578,6 +578,7 @@ function populateTable(data) {
         "№",
         "Data",
         "User",
+        "Method",
         "EndPoint",
         "RequestTime",
         "StatusCode",
@@ -652,6 +653,11 @@ function populateTable(data) {
         const userCell = document.createElement("td");
         userCell.innerText = item.User;
         row.appendChild(userCell);
+
+        // Method
+        const methodCell = document.createElement("td");
+        methodCell.innerText = item.Method;
+        row.appendChild(methodCell);
 
         // EndPoint
         const endPointCell = document.createElement("td");

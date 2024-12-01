@@ -12,5 +12,6 @@ public class ULogEntry
     public string? Username { get; set; } = string.Empty;
     public string? ActionType { get; set; } = nameof(Enums.ActionType.None);
     public BsonDocument? AdditionalInfo { get; set; } = null;
+    [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
     public DateTime DateTime = DateTime.Now;
 }

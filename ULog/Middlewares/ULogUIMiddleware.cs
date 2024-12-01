@@ -13,7 +13,7 @@ using System.Text.RegularExpressions;
 using ULog.Implements;
 using ULog.MongoDb.Entries;
 
-namespace ULog;
+namespace ULog.Middlewares;
 
 public class ULogUIMiddleware
 {
@@ -54,7 +54,7 @@ public class ULogUIMiddleware
     {
         var httpMethod = httpContext.Request.Method;
         var path = httpContext.Request.Path.Value;
-        
+
         if (httpMethod == "GET" && Regex.IsMatch(path, $"^/?{Regex.Escape(_options.RoutePrefix)}/?$", RegexOptions.IgnoreCase))
         {
             var indexUrl = httpContext.Request.GetEncodedUrl().TrimEnd('/') + "/index.html";
@@ -69,16 +69,16 @@ public class ULogUIMiddleware
             {
                 if (!httpContext.Response.HasStarted)
                 {
-                    if (result == 0)
+                    switch (result)
                     {
-                        await ResponseWithHttpTablesAsync(httpContext.Response);
-                    }
-                    else if (result == 1)
-                    {
-                    }
-                    else
-                    {
-                        await _staticFileMiddleware.Invoke(httpContext);
+                        case 0:
+                            await ResponseWithHttpTablesAsync(httpContext.Response);
+                            break;
+                        case 1:
+                            break;
+                        default:
+                            await _staticFileMiddleware.Invoke(httpContext);
+                            break;
                     }
                     await RespondWithIndexHtml(httpContext.Response);
                 }
