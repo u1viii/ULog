@@ -2,7 +2,7 @@
 
 public enum ULogLevel
 {
-    Information,
+    Info,
     Success,
     Warning,
     Error,

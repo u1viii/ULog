@@ -2,16 +2,21 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using System.Reflection;
 using System.Text.Json;
 using ULog.Attributes;
 using ULog.Implements;
 using ULog.MongoDb.Entries;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false)]
 public class ULogAttribute : ActionFilterAttribute
 {
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
+        // Check if the action has DisableULogAttribute
         var hasDisableULogAttribute = context.ActionDescriptor.EndpointMetadata
             .Any(em => em is DisableULogAttribute);
 
@@ -26,6 +31,8 @@ public class ULogAttribute : ActionFilterAttribute
         var _loggerOptions = httpContext.RequestServices.GetRequiredService<ULogOptions>();
         //Coming from middleware
         var requestBody = httpContext.Items["RequestBody"] as URequestBody;
+
+        
 
         //Who sent request
         _loggerOptions.Authorize = GetAuthorize(httpContext, _loggerOptions.Claims);
@@ -49,7 +56,26 @@ public class ULogAttribute : ActionFilterAttribute
         //Body params
         if (request is not null && !string.IsNullOrEmpty(requestBody!.Body))
         {
-            request.Add("Body", BsonDocument.Parse(requestBody.Body));
+            var actionDescriptor = context.ActionDescriptor as Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor;
+            BsonDocument bson = null;
+            if (actionDescriptor != null)
+            {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
+                var parameter = actionDescriptor.Parameters.FirstOrDefault().ParameterType;
+                var data = JsonSerializer.Deserialize(requestBody.Body, parameter, options);
+                if (data != null)
+                {
+                    bson = BsonDocument.Parse(JsonSerializer.Serialize(MaskSensitiveData(data)));
+                }
+            }
+            if (bson is not null)
+            {
+                request.Add("Body", bson);
+            }
         }
 
         //Start logging
@@ -135,5 +161,34 @@ public class ULogAttribute : ActionFilterAttribute
             return ipAddress;
         return string.Empty;
     }
-
+    /// <summary>
+    /// Masking datas which has SensitiveDataAttribute
+    /// </summary>
+    /// <param name="data">Parameter object</param>
+    /// <returns></returns>
+    object MaskSensitiveData(object data)
+    {
+        if (data == null) return data;
+        var allProps = data.GetType().GetProperties();
+        foreach (var prop in allProps)
+        {
+            if (prop.IsDefined(typeof(SensitiveDataAttribute), true))
+            {
+                var attribute = prop.GetCustomAttribute<SensitiveDataAttribute>()!;
+                if (prop.PropertyType == typeof(string))
+                    prop.SetValue(data, attribute.Mask);
+                else
+                    prop.SetValue(data, default);
+            }
+            else if (prop.PropertyType.IsClass)
+            {
+                var value = prop.GetValue(data);
+                if (value != null && !prop.PropertyType.IsPrimitive && prop.PropertyType != typeof(string))
+                {
+                    prop.SetValue(data, MaskSensitiveData(value));
+                }
+            }
+        }
+        return data;
+    }
 }

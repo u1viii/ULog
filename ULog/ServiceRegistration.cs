@@ -11,7 +11,7 @@ namespace ULog;
 
 public static class ServiceRegistration
 {
-    public static IServiceCollection AddULogger(this IServiceCollection services, string connectionString, ULogOptions? options = null, int queueCount = 2000)
+    public static IServiceCollection AddULog(this IServiceCollection services, string connectionString, ULogOptions? options = null, int queueCount = 2000)
     {
         ULogOptions _options = options ?? new ULogOptions();
         return services.AddServices(connectionString, _options, queueCount);
@@ -35,11 +35,11 @@ public static class ServiceRegistration
         return app.UseMiddleware<HttpLoggingMiddleware>();
     }
 
-    public static IApplicationBuilder UseULoggerUI(this IApplicationBuilder app)
+    public static IApplicationBuilder UseULogUI(this IApplicationBuilder app)
     {
         return app.UseMiddleware<ULogUIMiddleware>();
     }
-    public static IApplicationBuilder UseULoggerUI(this IApplicationBuilder app, UConfiguration? configuration = null)
+    public static IApplicationBuilder UseULogUI(this IApplicationBuilder app, UConfiguration? configuration = null)
     {
         var config = app.ApplicationServices.GetRequiredService<UConfiguration>();
         if (configuration is not null)
@@ -48,7 +48,7 @@ public static class ServiceRegistration
         }
         return app.UseMiddleware<ULogUIMiddleware>();
     }
-    public static IApplicationBuilder UseULoggerUI(this IApplicationBuilder app, string? password = null)
+    public static IApplicationBuilder UseULogUI(this IApplicationBuilder app, string? password = null)
     {
         var config = app.ApplicationServices.GetRequiredService<UConfiguration>();
         if (password is not null)

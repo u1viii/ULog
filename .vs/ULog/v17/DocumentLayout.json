@@ -3,12 +3,24 @@
   "WorkspaceRootPath": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{D7B64622-B667-4C27-B1DA-571CBC7E9B60}|ULog\\ULog.csproj|c:\\users\\\u00FClvi\\desktop\\ulog\\ulog\\attributes\\ulogattribute.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{D7B64622-B667-4C27-B1DA-571CBC7E9B60}|ULog\\ULog.csproj|solutionrelative:ulog\\attributes\\ulogattribute.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{D7B64622-B667-4C27-B1DA-571CBC7E9B60}|ULog\\ULog.csproj|c:\\users\\\u00FClvi\\desktop\\ulog\\ulog\\middlewares\\httploggingmiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D7B64622-B667-4C27-B1DA-571CBC7E9B60}|ULog\\ULog.csproj|solutionrelative:ulog\\middlewares\\httploggingmiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{D7B64622-B667-4C27-B1DA-571CBC7E9B60}|ULog\\ULog.csproj|c:\\users\\\u00FClvi\\desktop\\ulog\\ulog\\serviceregistration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D7B64622-B667-4C27-B1DA-571CBC7E9B60}|ULog\\ULog.csproj|solutionrelative:ulog\\serviceregistration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D7B64622-B667-4C27-B1DA-571CBC7E9B60}|ULog\\ULog.csproj|c:\\users\\\u00FClvi\\desktop\\ulog\\ulog\\backgroundtaskqueue.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D7B64622-B667-4C27-B1DA-571CBC7E9B60}|ULog\\ULog.csproj|solutionrelative:ulog\\backgroundtaskqueue.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D7B64622-B667-4C27-B1DA-571CBC7E9B60}|ULog\\ULog.csproj|c:\\users\\\u00FClvi\\desktop\\ulog\\ulog\\attributes\\ulogattribute.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D7B64622-B667-4C27-B1DA-571CBC7E9B60}|ULog\\ULog.csproj|solutionrelative:ulog\\attributes\\ulogattribute.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D7B64622-B667-4C27-B1DA-571CBC7E9B60}|ULog\\ULog.csproj|c:\\users\\\u00FClvi\\desktop\\ulog\\ulog\\attributes\\sensitivedataattribute.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D7B64622-B667-4C27-B1DA-571CBC7E9B60}|ULog\\ULog.csproj|solutionrelative:ulog\\attributes\\sensitivedataattribute.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,7 +30,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 8,
+          "SelectedChildIndex": 10,
           "Children": [
             {
               "$type": "Bookmark",
@@ -54,16 +66,52 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "BackgroundTaskQueue.cs",
+              "DocumentMoniker": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\BackgroundTaskQueue.cs",
+              "RelativeDocumentMoniker": "ULog\\BackgroundTaskQueue.cs",
+              "ToolTip": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\BackgroundTaskQueue.cs",
+              "RelativeToolTip": "ULog\\BackgroundTaskQueue.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-27T15:01:03.334Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "SensitiveDataAttribute.cs",
+              "DocumentMoniker": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\Attributes\\SensitiveDataAttribute.cs",
+              "RelativeDocumentMoniker": "ULog\\Attributes\\SensitiveDataAttribute.cs",
+              "ToolTip": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\Attributes\\SensitiveDataAttribute.cs",
+              "RelativeToolTip": "ULog\\Attributes\\SensitiveDataAttribute.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAA2AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-24T05:56:18.459Z"
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "HttpLoggingMiddleware.cs",
+              "DocumentMoniker": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\Middlewares\\HttpLoggingMiddleware.cs",
+              "RelativeDocumentMoniker": "ULog\\Middlewares\\HttpLoggingMiddleware.cs",
+              "ToolTip": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\Middlewares\\HttpLoggingMiddleware.cs",
+              "RelativeToolTip": "ULog\\Middlewares\\HttpLoggingMiddleware.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABQAAAAkAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-24T05:55:37.318Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "ULogAttribute.cs",
               "DocumentMoniker": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\Attributes\\ULogAttribute.cs",
               "RelativeDocumentMoniker": "ULog\\Attributes\\ULogAttribute.cs",
               "ToolTip": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\Attributes\\ULogAttribute.cs",
               "RelativeToolTip": "ULog\\Attributes\\ULogAttribute.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABgAAAA5AAAA",
+              "ViewState": "AQIAAAYAAAAAAAAAAAAAAB4AAABDAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-07-23T08:59:55.727Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-07-23T08:59:55.727Z"
             },
             {
               "$type": "Document",
@@ -73,7 +121,7 @@
               "RelativeDocumentMoniker": "ULog\\ServiceRegistration.cs",
               "ToolTip": "C:\\Users\\\u00DClvi\\Desktop\\ULog\\ULog\\ServiceRegistration.cs",
               "RelativeToolTip": "ULog\\ServiceRegistration.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABYAAAAoAAAA",
+              "ViewState": "AQIAABwAAAAAAAAAAAAowBYAAAAoAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-07-23T08:58:11.424Z"
             }

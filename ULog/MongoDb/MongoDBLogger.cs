@@ -27,7 +27,7 @@ public class MongoDBLogger : IULogger
     public async Task<IEnumerable<string>> GetHttpCollectionsAsync()
     {
         var names = await (await _httpDatabase.ListCollectionNamesAsync()).ToListAsync();
-        names.Reverse();
+        //names.Reverse();
         return names;
     }
 
