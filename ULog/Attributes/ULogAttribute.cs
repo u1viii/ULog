@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Amazon.Runtime.Internal;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
+using System.Net.Http;
 using System.Reflection;
 using System.Text.Json;
 using ULog.Attributes;
@@ -35,46 +37,9 @@ public class ULogAttribute : ActionFilterAttribute
         //Who sent request
         _loggerOptions.Authorize = GetAuthorize(httpContext, _loggerOptions.Claims);
 
-        BsonDocument request = new();
+        //Get request datas
+        var request = CreateRequestObject(context, httpContext, requestBody);
 
-        //Query params
-        foreach (var param in GetQueryParams(httpContext))
-        {
-            request[param.Key] = BsonValue.Create(param.Value);
-        }
-
-        //Header params
-        var headersBson = GetHeaders(context);
-
-        if (headersBson.Any())
-        {
-            request.Add("Headers", headersBson);
-        }
-
-        //Body params
-        if (request is not null && !string.IsNullOrEmpty(requestBody!.Body))
-        {
-            var actionDescriptor = context.ActionDescriptor as Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor;
-            BsonDocument bson = null;
-            if (actionDescriptor != null)
-            {
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true,
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                };
-                var parameter = actionDescriptor.Parameters.FirstOrDefault().ParameterType;
-                var data = JsonSerializer.Deserialize(requestBody.Body, parameter, options);
-                if (data != null)
-                {
-                    bson = BsonDocument.Parse(JsonSerializer.Serialize(MaskSensitiveData(data)));
-                }
-            }
-            if (bson is not null)
-            {
-                request.Add("Body", bson);
-            }
-        }
 
         //Start logging
         var id = ObjectId.GenerateNewId();
@@ -95,7 +60,7 @@ public class ULogAttribute : ActionFilterAttribute
         await _logger.LogResponseAsync(new UResponseEntry
         {
             StatusCode = context.HttpContext.Response.StatusCode,
-            Message = resultContext.Exception == null ? "Working!" : $"Error: {resultContext.Exception.Source}",
+            Message = resultContext.Exception == null ? "Working!" : $"Error: {resultContext.Exception.Message}",
             SecondDiff = (DateTime.Now - requestTime).TotalSeconds * 1000,
             DateTime = DateTime.Now
         }, id);
@@ -141,7 +106,7 @@ public class ULogAttribute : ActionFilterAttribute
     /// <returns></returns>
     string GetIpAddress(ConnectionInfo connection)
     {
-        return connection.RemoteIpAddress.ToString();
+        return connection.RemoteIpAddress!.ToString();
     }
     /// <summary>
     /// Masking datas which has SensitiveDataAttribute
@@ -172,5 +137,56 @@ public class ULogAttribute : ActionFilterAttribute
             }
         }
         return data;
+    }
+
+    /// <summary>
+    /// Create request object for logging
+    /// </summary>
+    /// <param name="context">Action Executing Context from OnActionExecuting method</param>
+    /// <param name="httpContext">Http context</param>
+    /// <param name="requestBody">Body of request</param>
+    /// <returns></returns>
+    BsonDocument CreateRequestObject(ActionExecutingContext context, HttpContext httpContext, URequestBody? requestBody)
+    {
+        BsonDocument request = new();
+        //Query params
+        foreach (var param in GetQueryParams(httpContext))
+        {
+            request[param.Key] = BsonValue.Create(param.Value);
+        }
+
+        //Header params
+        var headersBson = GetHeaders(context);
+
+        if (headersBson.Any())
+        {
+            request.Add("Headers", headersBson);
+        }
+
+        //Body params
+        if (request is not null && !string.IsNullOrEmpty(requestBody!.Body))
+        {
+            var actionDescriptor = context.ActionDescriptor as Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor;
+            BsonDocument? bson = null;
+            if (actionDescriptor != null)
+            {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
+                var parameter = actionDescriptor.Parameters.First().ParameterType;
+                var data = JsonSerializer.Deserialize(requestBody.Body, parameter, options);
+                if (data != null)
+                {
+                    bson = BsonDocument.Parse(JsonSerializer.Serialize(MaskSensitiveData(data)));
+                }
+            }
+            if (bson is not null)
+            {
+                request.Add("Body", bson);
+            }
+        }
+        return request!;
     }
 }

@@ -20,11 +20,12 @@ public static class ServiceRegistration
     {
         services.AddSingleton<IBTQ>(_ => new BTQ(queueCount));
         services.AddHostedService<QHS>();
-        services.AddSingleton<IULogger>(provider =>
+        services.AddSingleton<IULogger>(provider => 
         {
             var backgroundTaskQueue = provider.GetRequiredService<IBTQ>();
             return new MongoDBLogger(connectionString, _options, backgroundTaskQueue);
         });
+        services.AddSingleton<IHttpULogger>(provider => (MongoDBLogger)provider.GetRequiredService<IULogger>());
         services.AddSingleton(_options);
         services.AddSingleton(new UConfiguration());
         return services;
