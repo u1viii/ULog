@@ -96,7 +96,7 @@ public class ULogAttribute : ActionFilterAttribute
         {
             StatusCode = context.HttpContext.Response.StatusCode,
             Message = resultContext.Exception == null ? "Working!" : $"Error: {resultContext.Exception.Source}",
-            SecondDiff = (DateTime.Now - requestTime).TotalSeconds,
+            SecondDiff = (DateTime.Now - requestTime).TotalSeconds * 1000,
             DateTime = DateTime.Now
         }, id);
     }
@@ -111,7 +111,7 @@ public class ULogAttribute : ActionFilterAttribute
         }
         else
         {
-            return GetIpAddress(context.Request);
+            return GetIpAddress(context.Connection);
         }
     }
     Dictionary<string, object> GetQueryParams(HttpContext context)
@@ -134,30 +134,14 @@ public class ULogAttribute : ActionFilterAttribute
         }
         return headersBson;
     }
-    string GetIpAddress(HttpRequest request)
+    /// <summary>
+    /// Get IP address of the client
+    /// </summary>
+    /// <param name="connection">Connection object of HttpContext</param>
+    /// <returns></returns>
+    string GetIpAddress(ConnectionInfo connection)
     {
-        var ipAddress = request?.Headers?["X-Real-IP"].ToString();
-
-        if (!string.IsNullOrEmpty(ipAddress))
-            return ipAddress;
-
-        ipAddress = request?.Headers?["X-Forwarded-For"].ToString();
-
-        if (!string.IsNullOrEmpty(ipAddress))
-        {
-            var parts = ipAddress.Split(',');
-
-            if (parts.Count() > 0)
-            {
-                ipAddress = parts[0];
-            }
-            return ipAddress;
-        }
-
-        ipAddress = request?.HttpContext?.Connection?.RemoteIpAddress?.ToString();
-        if (!string.IsNullOrEmpty(ipAddress))
-            return ipAddress;
-        return string.Empty;
+        return connection.RemoteIpAddress.ToString();
     }
     /// <summary>
     /// Masking datas which has SensitiveDataAttribute
