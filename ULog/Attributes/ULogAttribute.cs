@@ -2,13 +2,11 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
 using System.Reflection;
 using System.Text.Json;
 using ULog.Attributes;
-using ULog.Implements;
+using ULog.Interfaces;
 using ULog.MongoDb.Entries;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false)]
@@ -27,7 +25,7 @@ public class ULogAttribute : ActionFilterAttribute
         }
 
         var httpContext = context.HttpContext;
-        var _logger = httpContext.RequestServices.GetRequiredService<IULogger>();
+        var _logger = httpContext.RequestServices.GetRequiredService<IHttpULogger>();
         var _loggerOptions = httpContext.RequestServices.GetRequiredService<ULogOptions>();
         //Coming from middleware
         var requestBody = httpContext.Items["RequestBody"] as URequestBody;

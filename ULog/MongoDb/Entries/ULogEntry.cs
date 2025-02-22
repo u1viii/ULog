@@ -7,7 +7,7 @@ public class ULogEntry
 {
     [BsonId]
     public string _id = Guid.NewGuid().ToString();
-    public string? LogLevel { get; set; } = nameof(ULogLevel.Information);
+    public string? LogLevel { get; set; } = nameof(ULogLevel.Info);
     public string? Message { get; set; } = string.Empty;
     public string? Username { get; set; } = string.Empty;
     public string? ActionType { get; set; } = nameof(Enums.ActionType.None);

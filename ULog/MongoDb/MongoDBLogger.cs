@@ -1,12 +1,12 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
 using ULog.Enums;
-using ULog.Implements;
+using ULog.Interfaces;
 using ULog.MongoDb.Entries;
 
 namespace ULog.MongoDb;
 
-public class MongoDBLogger : IULogger
+public class MongoDBLogger : IULogger, IHttpULogger
 {
     readonly IMongoCollection<ULogEntry> _logCollection;
     readonly IMongoCollection<URequestEntry> _httpCollection;
@@ -27,7 +27,7 @@ public class MongoDBLogger : IULogger
     public async Task<IEnumerable<string>> GetHttpCollectionsAsync()
     {
         var names = await (await _httpDatabase.ListCollectionNamesAsync()).ToListAsync();
-        //names.Reverse();
+        names.Reverse();
         return names;
     }
 
@@ -134,13 +134,16 @@ public class MongoDBLogger : IULogger
     {
         BsonDocument document = new BsonDocument();
         document.AddRange(additionalInfo ?? new Dictionary<string, object>());
-        await _logCollection.InsertOneAsync(new ULogEntry
+        await _bgService.QueueBackgroundWorkItemAsync(async token =>
         {
-            ActionType = actionType.ToString(),
-            LogLevel = level.ToString(),
-            Message = message,
-            Username = userName,
-            AdditionalInfo = document
+            await _logCollection.InsertOneAsync(new ULogEntry
+            {
+                ActionType = actionType.ToString(),
+                LogLevel = level.ToString(),
+                Message = message,
+                Username = userName,
+                AdditionalInfo = document
+            });
         });
     }
 

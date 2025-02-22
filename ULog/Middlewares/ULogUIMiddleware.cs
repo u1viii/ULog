@@ -10,7 +10,7 @@ using MongoDB.Bson;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using ULog.Implements;
+using ULog.Interfaces;
 using ULog.MongoDb.Entries;
 
 namespace ULog.Middlewares;
